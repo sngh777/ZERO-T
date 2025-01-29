@@ -5,7 +5,7 @@ This project focuses on building a secure CI/CD pipeline based on Zero Trust Arc
 
 ---
 
-![Pipeline Workflow](.pipeline-diagram.png "Pipeline Overview")
+![Pipeline Workflow](pipeline-diagram.png "Pipeline Overview")
 
 ---
 
