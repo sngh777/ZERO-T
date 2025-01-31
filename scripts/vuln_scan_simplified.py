@@ -40,23 +40,30 @@ def run_docker_bench():
         print(f"Error running Docker Bench Security: {e}")
 
 def run_owasp_zap_scan(target_ip, target_port):
+    client = docker.from_env()
     print("Pulling zaproxy/zap-stable image...")
     client.images.pull("zaproxy/zap-stable")
+
     try:
         print("Starting OWASP ZAP scan...")
+        
+        # Create a directory for ZAP output files
+        output_dir = os.path.join(os.getcwd(), "zap_output")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Run the ZAP container
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html",
+            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html -s /zap/wrk/zap_out.json",
             remove=True,  # Remove the container after execution
             user=f"{os.getuid()}:{os.getgid()}",  # Run as the current user
-            volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory
+            volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
             detach=False  # Run in the foreground
         )
         print(container.decode('utf-8'))  # Print container logs
-        print("OWASP ZAP scan completed. Report saved as zap_report.html.")
+        print(f"OWASP ZAP scan completed. Reports saved in {output_dir}.")
     except docker.errors.APIError as e:
         print(f"Error running OWASP ZAP: {e}")
-
 
 def run_trivy_scan(image_name):
     if not image_name or image_name.lower() == "n/a":
