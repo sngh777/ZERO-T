@@ -40,7 +40,7 @@ def run_docker_bench():
         print(f"Error running Docker Bench Security: {e}")
 
 def run_owasp_zap_scan(target_ip, port):
-     client = docker.from_env()
+    client = docker.from_env()
 
     try:
         print("Starting OWASP ZAP scan...")
