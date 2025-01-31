@@ -51,7 +51,7 @@ def run_owasp_zap_scan(target_ip, port):
         print(f"Scanning target: http://{target_ip}:{port}")
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_ip}:{port} -v -l DEBUG --output /zap/wrk/zap_report.html",
+            command=f"zap-baseline.py -t http://{target_ip}:{port} -l DEBUG --output /zap/wrk/zap_report.html",
             remove=True,  # Remove the container after execution
             user=f"{os.getuid()}:{os.getgid()}",  # Run as the current user
             volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory
