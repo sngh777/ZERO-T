@@ -40,26 +40,23 @@ def run_docker_bench():
         print(f"Error running Docker Bench Security: {e}")
 
 def run_owasp_zap_scan(target_ip, port):
-    print("Starting OWASP ZAP scan...")
+     client = docker.from_env()
 
     try:
-        # Pull the OWASP ZAP image
-        print("Pulling OWASP ZAP image (zaproxy/zap-stable)...")
-        client.images.pull("zaproxy/zap-stable")
-
-        # Run OWASP ZAP scan
-        print(f"Scanning target: http://{target_ip}:{port}")
+        print("Starting OWASP ZAP scan...")
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_ip}:{port} -l INFO -r /zap/wrk/zap_report.html",
+            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html",
             remove=True,  # Remove the container after execution
             user=f"{os.getuid()}:{os.getgid()}",  # Run as the current user
             volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory
             detach=False  # Run in the foreground
         )
         print(container.decode('utf-8'))  # Print container logs
+        print("OWASP ZAP scan completed. Report saved as zap_report.html.")
     except docker.errors.APIError as e:
         print(f"Error running OWASP ZAP: {e}")
+
 
 def run_trivy_scan(image_name):
     if not image_name or image_name.lower() == "n/a":
