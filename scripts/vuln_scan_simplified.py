@@ -77,7 +77,7 @@ def run_trivy_scan(image_name):
         print("Running Trivy compliance scan...")
         compliance_container = client.containers.run(
             image="aquasec/trivy",
-            command=f"image --compliance docker-cis {image_name}",
+            command=f"image --compliance docker-cis-1.6.0 {image_name}",  # Use the correct compliance standard
             remove=True,  # Remove the container after execution
             detach=False  # Run in the foreground
         )
