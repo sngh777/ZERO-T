@@ -24,6 +24,8 @@ def add_user_to_docker_group():
     """Add the Jenkins user to the Docker group and set permissions for the Docker socket."""
     print("Adding Jenkins user to Docker group and setting Docker socket permissions...")
     try:
+         # Get the current user
+        username = getpass.getuser()
         # Add the Jenkins user to the Docker group
         subprocess.run(["sudo", "usermod", "-aG", "docker", "jenkins"], check=True)
         print("Jenkins user added to Docker group.")
@@ -31,6 +33,18 @@ def add_user_to_docker_group():
         # Set permissions for the Docker socket
         subprocess.run(["sudo", "chmod", "666", "/var/run/docker.sock"], check=True)
         print("Docker socket permissions updated to 666.")
+       
+
+        # Add the current user to the Docker group
+        subprocess.run(["sudo", "usermod", "-aG", "docker", username], check=True)
+        print(f"User '{username}' added to Docker group.")
+
+        # Set ownership of the Docker socket to root:docker
+        subprocess.run(["sudo", "chown", "root:docker", "/var/run/docker.sock"], check=True)
+        print("Docker socket ownership updated to root:docker.")
+
+        # Notify the user to log out and log back in for changes to take effect
+        print("Please log out and log back in for the Docker group changes to take effect.")
     except Exception as e:
         print(f"Failed to configure Docker permissions: {e}")
         sys.exit(1)
