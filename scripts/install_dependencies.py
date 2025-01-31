@@ -21,14 +21,18 @@ def install_docker():
             sys.exit(1)
 
 def add_user_to_docker_group():
-    """Add the current user to the Docker group to run Docker commands without sudo."""
-    print("Adding user to Docker group...")
+    """Add the Jenkins user to the Docker group and set permissions for the Docker socket."""
+    print("Adding Jenkins user to Docker group and setting Docker socket permissions...")
     try:
-        username = getpass.getuser()
-        subprocess.run(["sudo", "usermod", "-aG", "docker", username], check=True)
-        print(f"User '{username}' added to Docker group. Please log out and log back in for changes to take effect.")
+        # Add the Jenkins user to the Docker group
+        subprocess.run(["sudo", "usermod", "-aG", "docker", "jenkins"], check=True)
+        print("Jenkins user added to Docker group.")
+
+        # Set permissions for the Docker socket
+        subprocess.run(["sudo", "chmod", "666", "/var/run/docker.sock"], check=True)
+        print("Docker socket permissions updated to 666.")
     except Exception as e:
-        print(f"Failed to add user to Docker group: {e}")
+        print(f"Failed to configure Docker permissions: {e}")
         sys.exit(1)
 
 def install_trivy():
@@ -86,7 +90,7 @@ def main():
     # Install Docker
     install_docker()
 
-    # Add the current user to the Docker group
+    # Add the Jenkins user to the Docker group and set Docker socket permissions
     add_user_to_docker_group()
 
     # Install Trivy
