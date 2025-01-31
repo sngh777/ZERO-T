@@ -15,7 +15,7 @@ def find_web_containers():
                 host_port = port_data[0].get('HostPort', 'N/A')
                 container_info = {
                     'name': container.name,  # Container name
-                    'image': container.image.tags[0] if container.image.tags else 'N/A',  # Image name
+                    'image': 'image': container.image.id if not container.image.tags else container.image.tags[0], #If you want to scan untagged images, you can use the container's image ID as a fallback:
                     'ip': ip_address,
                     'container_port': port,
                     'host_port': host_port
