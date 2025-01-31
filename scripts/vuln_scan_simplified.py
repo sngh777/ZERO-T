@@ -77,8 +77,9 @@ def run_trivy_scan(image_name):
         print("Running Trivy compliance scan...")
         compliance_container = client.containers.run(
             image="aquasec/trivy",
-            command=f"image --compliance docker-cis-1.6.0 {image_name}",  # Use the correct compliance standard
+            command=f"image --compliance docker-cis-1.6.0 {image_name}",
             remove=True,  # Remove the container after execution
+            volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},  # Mount Docker socket
             detach=False  # Run in the foreground
         )
         print(compliance_container.decode('utf-8'))  # Print compliance scan logs
@@ -89,6 +90,7 @@ def run_trivy_scan(image_name):
             image="aquasec/trivy",
             command=f"image {image_name}",
             remove=True,  # Remove the container after execution
+            volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},  # Mount Docker socket
             detach=False  # Run in the foreground
         )
         print(vuln_container.decode('utf-8'))  # Print vulnerability scan logs
