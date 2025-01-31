@@ -14,7 +14,7 @@ def find_web_containers():
             if port in web_ports and port_data:
                 host_port = port_data[0].get('HostPort', 'N/A')
                 container_info = {
-                    'name': container.name,
+                    'image': container.image.tags[0] if container.image.tags else 'N/A',  # Image name
                     'ip': ip_address,
                     'container_port': port,
                     'host_port': host_port
