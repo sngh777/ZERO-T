@@ -30,10 +30,17 @@ def build_and_run_container():
         ports={f"80/tcp": free_port}
     )
 
-    print(f"Container started with ID {container.id}")
+    # Check the container's exposed ports
+    print(f"Container ports: {container.ports}")
+
+    # Access the host port dynamically
+    if '80/tcp' in container.ports:
+        host_port = container.ports['80/tcp'][0]['HostPort']
+        print(f"Container '{container.name}' is running and can be accessed at http://localhost:{host_port}")
+    else:
+        print(f"Port 80 is not exposed for container '{container.name}'")
+
     return container
 
 if __name__ == "__main__":
     container = build_and_run_container()
-    print(f"Container '{container.name}' is running and can be accessed at http://localhost:{container.ports['80/tcp'][0]['HostPort']}")
-
