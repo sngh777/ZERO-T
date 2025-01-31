@@ -39,9 +39,9 @@ def run_docker_bench():
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
 
-def run_owasp_zap_scan(target_ip, port):
-    client = docker.from_env()
-
+def run_owasp_zap_scan(target_ip, target_port):
+    print("Pulling zaproxy/zap-stable image...")
+    client.images.pull("zaproxy/zap-stable")
     try:
         print("Starting OWASP ZAP scan...")
         container = client.containers.run(
