@@ -87,10 +87,10 @@ def run_zap_scan(target_ip, target_port):
         if zap.core.version:  # Check if ZAP is responsive
             print("ZAP API is ready.")
             break
-        except Exception:
+      except Exception:
             print("Waiting for ZAP API to be ready...")
             time.sleep(1)
-      else:
+    else:
         print("ZAP API did not start within the timeout period. Exiting.")
         return
 
