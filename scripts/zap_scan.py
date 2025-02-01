@@ -31,10 +31,10 @@ def start_zap_container(zap_host_port):
         "docker", "run", "-d", "--rm",
         "-u", "zap",
         "--name", "zap_instance",
-        "-p", f"{zap_host_port}:8080",
+        "-p", f"{zap_host_port}:{zap_host_port}",
         "zaproxy/zap-stable",
         "zap.sh", "-daemon",
-        "-port", "8080",
+        "-port", {zap_host_port},
         "-host", "0.0.0.0",
         "-config", "api.disablekey=true"
     ]
@@ -42,6 +42,9 @@ def start_zap_container(zap_host_port):
     print("Starting ZAP container...")
     try:
         container_id = subprocess.check_output(docker_cmd, stderr=subprocess.STDOUT).decode().strip()
+        if not container_id:
+            print("Failed to start ZAP container. Exiting scan.")
+            return
         print(f"ZAP container started successfully with ID: {container_id}")
         return container_id
     except subprocess.CalledProcessError as e:
@@ -78,7 +81,19 @@ def run_zap_scan(target_ip, target_port):
     start_zap_container(zap_host_port)
 
     # Wait a few seconds to allow ZAP to fully start up.
-    time.sleep(10)
+    timeout = 60  # Maximum wait time in seconds
+    for _ in range(timeout):
+      try:
+        if zap.core.version:  # Check if ZAP is responsive
+            print("ZAP API is ready.")
+            break
+        except Exception:
+            print("Waiting for ZAP API to be ready...")
+            time.sleep(1)
+      else:
+        print("ZAP API did not start within the timeout period. Exiting.")
+        return
+
 
     # Configure the ZAP API client to connect via the randomly chosen port.
     zap_proxy = f'http://127.0.0.1:{zap_host_port}'
