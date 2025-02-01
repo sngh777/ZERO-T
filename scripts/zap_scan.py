@@ -98,7 +98,7 @@ def run_zap_scan(target_ip, target_port):
 
     # Configure the ZAP API client to connect via the randomly chosen port.
     zap_proxy = f'http://127.0.0.1:{zap_host_port}'
-    zap = ZAPv2(apikey='', proxies={'http': zap_proxy, 'https': zap_proxy})
+    zap = ZAPv2(proxies={'http': zap_proxy, 'https': zap_proxy})
     
     # Access the target so that ZAP records it in its history.
     print(f"Accessing target: {target}")
