@@ -55,17 +55,21 @@ def run_zap_scan(target_host, target_port):
         print("Pulling OWASP ZAP image (zaproxy/zap-stable)...")
         client.images.pull("zaproxy/zap-stable")
 
+        # Define the output directory for ZAP reports
+        output_dir = os.path.join(os.getcwd(), "zap_reports")
+        os.makedirs(output_dir, exist_ok=True)  # Create the directory if it doesn't exist
+
         # Run OWASP ZAP scan
         print("Starting OWASP ZAP scan...")
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r /zap/wrk/zap_report.html",  # Save report in /zap/wrk
+            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html -J zap_out.json",
             remove=True,  # Remove the container after execution
-            volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory to /zap/wrk for report output
+            volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
             detach=False  # Run in the foreground
         )
         print(container.decode('utf-8'))  # Print ZAP scan logs
-        print("ZAP scan completed. Report saved as 'zap_report.html'.")
+        print(f"ZAP scan completed. Reports saved in '{output_dir}'.")
     except Exception as e:
         print(f"Error running OWASP ZAP: {e}")
 
@@ -140,16 +144,18 @@ def main():
         return
 
     # Run Docker Bench security scan
-    run_docker_bench()
+    '''
+    #run_docker_bench()
     time.sleep(2)
+    '''
 
     # Iterate over each web container and run scans
     for container in web_containers:
-        print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
+        #print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
-        run_trivy_scan(container['image'])
-        time.sleep(2)
+        #run_trivy_scan(container['image'])
+        #time.sleep(2)
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
