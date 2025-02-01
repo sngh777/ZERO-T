@@ -35,7 +35,7 @@ def start_zap_container():
               command=f"zap.sh -daemon -host 0.0.0.0 -port {host_port} -config api.disablekey=true",
               ports={f"{host_port}/tcp": host_port},  # Bind host and container to the same port
               detach=True,
-              remove=Truez
+              remove=True,
               environment=["ZAP_JVM_OPTIONS=-Xmx2048m"]
         )
 
