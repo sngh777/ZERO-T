@@ -2,7 +2,7 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
-from zap_scan import run_zap_scan
+#from zap_scan import run_zap_scan
 
 
 # Initialize Docker client
@@ -40,6 +40,34 @@ def run_docker_bench():
         print(container.decode('utf-8'))  # Print container logs
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
+
+def run_zap_scan(target_host, target_port):
+    """
+    Run an OWASP ZAP scan on the specified target host and port.
+    
+    :param target_host: The host to scan (e.g., 'localhost').
+    :param target_port: The port to scan (e.g., 8080).
+    """
+    print(f"Running OWASP ZAP scan on {target_host}:{target_port}...")
+
+    try:
+        # Pull the OWASP ZAP image
+        print("Pulling OWASP ZAP image...")
+        client.images.pull("owasp/zap2docker-stable")
+
+        # Run OWASP ZAP scan
+        print("Starting OWASP ZAP scan...")
+        container = client.containers.run(
+            image="owasp/zap2docker-stable",
+            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html",
+            remove=True,  # Remove the container after execution
+            volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory to save the report
+            detach=False  # Run in the foreground
+        )
+        print(container.decode('utf-8'))  # Print ZAP scan logs
+        print("ZAP scan completed. Report saved as 'zap_report.html'.")
+    except docker.errors.APIError as e:
+        print(f"Error running OWASP ZAP: {e}")
 
 
 
