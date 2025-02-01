@@ -28,16 +28,17 @@ def start_zap_container(zap_host_port):
     Start the ZAP container and check for common errors such as image unavailability.
     """
     docker_cmd = [
-        "docker", "run", "-d", "--rm",
-        "-u", "zap",
-        "--name", "zap_instance",
-        "-p", f"{zap_host_port}:{zap_host_port}",
-        "zaproxy/zap-stable",
-        "zap.sh", "-daemon",
-        "-port", {zap_host_port},
-        "-host", "0.0.0.0",
-        "-config", "api.disablekey=true"
+    "docker", "run", "-d", "--rm",
+    "-u", "zap",
+    "--name", "zap_instance",
+    "-p", f"{zap_host_port}:{zap_host_port}",
+    "zaproxy/zap-stable",
+    "zap.sh", "-daemon",
+    "-port", str(zap_host_port),  # Correctly format zap_host_port as a string
+    "-host", "0.0.0.0",
+    "-config", "api.disablekey=true"
     ]
+
 
     print("Starting ZAP container...")
     try:
