@@ -82,7 +82,7 @@ def run_zap_scan(target_ip, target_port):
     start_zap_container(zap_host_port)
 
     # Wait a few seconds to allow ZAP to fully start up.
-    timeout = 60  # Maximum wait time in seconds
+    timeout = 180  # Maximum wait time in seconds
     for _ in range(timeout):
       try:
         if zap.core.version:  # Check if ZAP is responsive
@@ -90,7 +90,7 @@ def run_zap_scan(target_ip, target_port):
             break
       except Exception:
             print("Waiting for ZAP API to be ready...")
-            time.sleep(1)
+            time.sleep(10)
     else:
         print("ZAP API did not start within the timeout period. Exiting.")
         return
