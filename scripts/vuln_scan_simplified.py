@@ -43,7 +43,7 @@ def run_docker_bench():
 
 def run_zap_scan(target_host, target_port):
     """
-    Run an OWASP ZAP scan on the specified target host and port.
+    Run an OWASP ZAP scan on the specified target host and port using the newer zaproxy/zap-stable image.
     
     :param target_host: The host to scan (e.g., 'localhost').
     :param target_port: The port to scan (e.g., 8080).
@@ -51,14 +51,14 @@ def run_zap_scan(target_host, target_port):
     print(f"Running OWASP ZAP scan on {target_host}:{target_port}...")
 
     try:
-        # Pull the OWASP ZAP image
-        print("Pulling OWASP ZAP image...")
-        client.images.pull("owasp/zap2docker-stable")
+        # Pull the newer OWASP ZAP image
+        print("Pulling OWASP ZAP image (zaproxy/zap-stable)...")
+        client.images.pull("zaproxy/zap-stable")
 
         # Run OWASP ZAP scan
         print("Starting OWASP ZAP scan...")
         container = client.containers.run(
-            image="owasp/zap2docker-stable",
+            image="zaproxy/zap-stable",
             command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html",
             remove=True,  # Remove the container after execution
             volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory to save the report
@@ -66,7 +66,7 @@ def run_zap_scan(target_host, target_port):
         )
         print(container.decode('utf-8'))  # Print ZAP scan logs
         print("ZAP scan completed. Report saved as 'zap_report.html'.")
-    except docker.errors.APIError as e:
+    except Exception as e:
         print(f"Error running OWASP ZAP: {e}")
 
 
