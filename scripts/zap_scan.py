@@ -21,6 +21,44 @@ def get_free_port(low=8000, high=9000):
         if not is_port_in_use(port):
             return port
 
+
+
+def start_zap_container(zap_host_port):
+    """
+    Start the ZAP container and check for common errors such as image unavailability.
+    """
+    docker_cmd = [
+        "docker", "run", "-d", "--rm",
+        "-u", "zap",
+        "--name", "zap_instance",
+        "-p", f"{zap_host_port}:8080",
+        "zaproxy/zap-stable",
+        "zap.sh", "-daemon",
+        "-port", "8080",
+        "-host", "0.0.0.0",
+        "-config", "api.disablekey=true"
+    ]
+
+    print("Starting ZAP container...")
+    try:
+        container_id = subprocess.check_output(docker_cmd, stderr=subprocess.STDOUT).decode().strip()
+        print(f"ZAP container started successfully with ID: {container_id}")
+        return container_id
+    except subprocess.CalledProcessError as e:
+        output = e.output.decode().strip()
+        if "No such image" in output:
+            print("Error: ZAP Docker image 'zaproxy/zap-stable' not found. Pulling the image...")
+            try:
+                subprocess.run(["docker", "pull", "zaproxy/zap-stable"], check=True)
+                print("Image pulled successfully. Try restarting the scan.")
+            except subprocess.CalledProcessError as pull_error:
+                print("Error pulling image:", pull_error)
+        elif "port is already allocated" in output:
+            print(f"Error: Port {zap_host_port} is already in use.")
+        else:
+            print(f"Unexpected error starting ZAP container: {output}")
+        return None
+
 def run_zap_scan(target_ip, target_port):
     """
     Start the OWASP ZAP container on a random free host port, scan the target
@@ -36,28 +74,8 @@ def run_zap_scan(target_ip, target_port):
     # Choose a random host port for mapping ZAP's API port (container port 8080)
     zap_host_port = get_free_port(8000, 9000)
     print(f"Using host port {zap_host_port} for ZAP API mapping.")
-
-    # Start the OWASP ZAP Docker container in daemon mode.
-    # You can use either owasp/zap2docker-stable or zaproxy/zap-stable.
-    docker_cmd = [
-        "docker", "run", "-d", "--rm",
-        "-u", "zap",
-        "--name", "zap_instance",
-        "-p", f"{zap_host_port}:8080",
-        "owasp/zap2docker-stable",  # or "zaproxy/zap-stable"
-        "zap.sh", "-daemon",
-        "-port", "8080",
-        "-host", "0.0.0.0",
-        "-config", "api.disablekey=true"
-    ]
     
-    print("Starting ZAP container...")
-    try:
-        container_id = subprocess.check_output(docker_cmd).decode().strip()
-        print(f"ZAP container started with container ID: {container_id}")
-    except subprocess.CalledProcessError as e:
-        print("Error starting ZAP container:", e)
-        return
+    start_zap_container(zap_host_port)
 
     # Wait a few seconds to allow ZAP to fully start up.
     time.sleep(10)
