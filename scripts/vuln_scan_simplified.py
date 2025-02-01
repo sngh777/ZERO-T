@@ -2,6 +2,8 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
+import requests
+import random
 
 # Initialize Docker client
 client = docker.from_env()
@@ -39,29 +41,82 @@ def run_docker_bench():
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
 
-def run_owasp_zap_scan(target_ip, target_port):
+
+def start_zap_container():
+    """Start ZAP Docker container on a random host port and return container & port"""
     client = docker.from_env()
+    
+    # Find a random available port on the host
+    host_port = random.randint(8000, 8999)  # Random port in safe range
+    
+    # Start the ZAP container
+    container = client.containers.run(
+        image="zaproxy/zap-stable",
+        command=f"zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true",
+        ports={'8080/tcp': host_port},  # Map container port 8080 to random host port
+        detach=True,
+        remove=True  # Auto-remove container when stopped
+    )
+    
+    # Wait for ZAP to be ready
+    zap_proxy = f"http://localhost:{host_port}"
+    for _ in range(30):  # 30 second timeout
+        try:
+            if requests.get(f"{zap_proxy}/JSON/core/view/version/").status_code == 200:
+                print(f"ZAP container started on port {host_port}")
+                return container, host_port
+        except requests.exceptions.ConnectionError:
+            time.sleep(1)
+    
+    raise RuntimeError("ZAP container failed to start")
 
+def run_zap_scan(target_ip, target_port):
+    """Run full ZAP scan against specified target"""
+    container = None
     try:
-        print("Starting OWASP ZAP scan...")
-        
-        # Create a directory for ZAP output files
-        output_dir = os.path.join(os.getcwd(), "zap_output")
-        os.makedirs(output_dir, exist_ok=True)
+        # Start ZAP container
+        container, zap_host_port = start_zap_container()
+        zap_proxy = f"http://localhost:{zap_host_port}"
+        target_url = f"http://{target_ip}:{target_port}"
 
-        # Run the ZAP container
-        container = client.containers.run(
-            image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html -J /zap/wrk/zap_out.json",
-            remove=True,  # Remove the container after execution
-            user=f"{os.getuid()}:{os.getgid()}",  # Run as the current user
-            volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
-            detach=False  # Run in the foreground
+        # Start active scan
+        print(f"Starting scan for {target_url}")
+        scan_response = requests.get(
+            f"{zap_proxy}/JSON/ascan/action/scan/",
+            params={
+                "url": target_url,
+                "recurse": True,
+                "inScopeOnly": True,
+                "scanPolicyName": "Default Policy"
+            }
         )
-        print(container.decode('utf-8'))  # Print container logs
-        print(f"OWASP ZAP scan completed. Reports saved in {output_dir}.")
-    except docker.errors.APIError as e:
-        print(f"Error running OWASP ZAP: {e}")
+        scan_id = scan_response.json().get("scan")
+
+        # Monitor scan progress
+        while True:
+            status_response = requests.get(
+                f"{zap_proxy}/JSON/ascan/view/status/",
+                params={"scanId": scan_id}
+            )
+            status = status_response.json().get("status")
+            print(f"Scan progress: {status}%")
+            if status == "100":
+                break
+            time.sleep(5)
+
+        # Generate report
+        report_response = requests.get(f"{zap_proxy}/OTHER/core/other/htmlreport/")
+        report_filename = f"zap_report_{target_ip}_{target_port}.html"
+        with open(report_filename, "wb") as f:
+            f.write(report_response.content)
+        
+        print(f"Scan complete! Report saved to {report_filename}")
+        return report_filename
+
+    finally:
+        # Clean up container
+        if container:
+            container.stop()
 
 def run_trivy_scan(image_name):
     if not image_name or image_name.lower() == "n/a":
@@ -141,7 +196,7 @@ def main():
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
-            run_owasp_zap_scan(container['ip'], container['host_port'])
+            run_zap_scan(container['ip'], container['host_port'])
         time.sleep(2)
 
         # Run Nmap scan
