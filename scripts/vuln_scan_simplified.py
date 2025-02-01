@@ -59,9 +59,9 @@ def run_zap_scan(target_host, target_port):
         print("Starting OWASP ZAP scan...")
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html",
+            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r /zap/wrk/zap_report.html",  # Save report in /zap/wrk
             remove=True,  # Remove the container after execution
-            volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory to save the report
+            volumes={os.getcwd(): {"bind": "/zap/wrk", "mode": "rw"}},  # Mount current directory to /zap/wrk for report output
             detach=False  # Run in the foreground
         )
         print(container.decode('utf-8'))  # Print ZAP scan logs
