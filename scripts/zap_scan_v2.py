@@ -31,12 +31,14 @@ def start_zap_container():
     # Start the ZAP container
     try:
         container = client.containers.run(
-            image="zaproxy/zap-stable",
-            command=f"zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true",
-            ports={'8080/tcp': host_port},  # Map container port 8080 to random host port
-            detach=True,
-            remove=True  # Auto-remove container when stopped
+              image="zaproxy/zap-stable",
+              command=f"zap.sh -daemon -host 0.0.0.0 -port {host_port} -config api.disablekey=true",
+              ports={f"{host_port}/tcp": host_port},  # Bind host and container to the same port
+              detach=True,
+              remove=Truez
+              environment=["ZAP_JVM_OPTIONS=-Xmx2048m"]
         )
+
     except docker.errors.APIError as e:
         print(f"Error starting ZAP container: {e}")
         raise RuntimeError("Failed to start ZAP container")
@@ -44,7 +46,7 @@ def start_zap_container():
     # Wait for ZAP to be ready
     zap_proxy = f"http://localhost:{host_port}"
     print(f"Waiting for ZAP API to be ready at {zap_proxy}...")
-    for _ in range(60):  # 60 second timeout
+    for _ in range(120):  # 60 second timeout
         try:
             if requests.get(f"{zap_proxy}/JSON/core/view/version/").status_code == 200:
                 print(f"ZAP container started on port {host_port}")
