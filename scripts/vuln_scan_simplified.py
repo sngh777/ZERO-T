@@ -41,8 +41,6 @@ def run_docker_bench():
 
 def run_owasp_zap_scan(target_ip, target_port):
     client = docker.from_env()
-    print("Pulling zaproxy/zap-stable image...")
-    client.images.pull("zaproxy/zap-stable")
 
     try:
         print("Starting OWASP ZAP scan...")
@@ -54,7 +52,7 @@ def run_owasp_zap_scan(target_ip, target_port):
         # Run the ZAP container
         container = client.containers.run(
             image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html -s /zap/wrk/zap_out.json",
+            command=f"zap-baseline.py -t http://{target_ip}:{target_port} -r /zap/wrk/zap_report.html -J /zap/wrk/zap_out.json",
             remove=True,  # Remove the container after execution
             user=f"{os.getuid()}:{os.getgid()}",  # Run as the current user
             volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
