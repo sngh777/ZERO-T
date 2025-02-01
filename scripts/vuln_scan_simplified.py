@@ -80,19 +80,22 @@ def run_trivy_scan(image_name):
     except docker.errors.APIError as e:
         print(f"Error running Trivy: {e}")
 
-def run_nmap_scan(target_ip):
-    print("Starting Nmap scan...")
+
+        
+
+def run_nmap_scan_dockerized(host, port):
+    print("Pulling Nmap image...")
+    client.images.pull("instrumentisto/nmap")
+    """
+    Run Nmap scan using a Dockerized Nmap tool on the host's mapped port.
+    """
+    print(f"Running Dockerized Nmap scan on {host}:{port}...")
 
     try:
-        # Pull the Nmap image
-        print("Pulling Nmap image...")
-        client.images.pull("instrumentisto/nmap")
-
-        # Run Nmap scan
-        print(f"Scanning target: {target_ip}")
+        # Run Nmap scan using the instrumentisto/nmap image
         container = client.containers.run(
             image="instrumentisto/nmap",
-            command=f"-sV -Pn {target_ip}",
+            command=f"-sV -Pn {host} -p {port}",  # Scan the host and specific port
             remove=True,  # Remove the container after execution
             detach=False  # Run in the foreground
         )
@@ -122,12 +125,12 @@ def main():
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
-            run_zap_scan(container['ip'], container['host_port'])
+            run_zap_scan("host.docker.internal", container['host_port'])
         time.sleep(2)
 
         # Run Nmap scan
-        if container.get('ip') != 'N/A':
-            run_nmap_scan(container['ip'])
+        if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
+            run_nmap_scan_dockerized("host.docker.internal",container['host_port'])
         time.sleep(2)
 
 if __name__ == '__main__':
