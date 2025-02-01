@@ -2,7 +2,7 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
-#from zap_scan import run_zap_scan
+from zap_scan import run_zap_scan
 
 
 # Initialize Docker client
@@ -40,7 +40,7 @@ def run_docker_bench():
         print(container.decode('utf-8'))  # Print container logs
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
-
+'''
 def run_zap_scan(target_host, target_port):
     """
     Run an OWASP ZAP scan on the specified target host and port using the newer zaproxy/zap-stable image.
@@ -72,7 +72,7 @@ def run_zap_scan(target_host, target_port):
         print(f"ZAP scan completed. Reports saved in '{output_dir}'.")
     except Exception as e:
         print(f"Error running OWASP ZAP: {e}")
-
+'''
 
 
 
