@@ -111,10 +111,3 @@ def run_zap_scan(target_ip, target_port):
     except subprocess.CalledProcessError as e:
         print("Error stopping ZAP container:", e)
 
-if __name__ == "__main__":
-    # Example usage:
-    # Provide the target IP and port to scan.
-    target_ip = "myapp"     # Replace with target IP or container name
-    target_port = 80        # Replace with target port
-
-    run_zap_scan(target_ip, target_port)
