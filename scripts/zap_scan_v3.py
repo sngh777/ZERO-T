@@ -119,5 +119,4 @@ def run_zap_scan(target_ip: str, target_port: int):
             zap_process.terminate()
             print("ZAP process terminated.")
 
-# Example usage
-run_zap_scan('172.17.0.2', 8081)
+
