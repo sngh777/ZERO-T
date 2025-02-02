@@ -7,7 +7,7 @@ def run_zap_scan(host_port):
     # Pull the zaproxy/zap-stable image
     print("Pulling the zaproxy/zap-stable image...")
     try:
-        subprocess.run(["docker", "pull", "ghcr.io/zaproxy/zaproxy:stable"], check=True)
+        subprocess.run(["docker", "pull", "zaproxy/zap-stable"], check=True)
         print("Image pulled successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Error pulling ZAP image: {e}")
@@ -20,7 +20,7 @@ def run_zap_scan(host_port):
     zap_command = [
         "docker", "run", "--network", "host", 
         "-v", f"{current_directory}:/zap/wrk/:rw",  # Replace $(pwd) with current_directory
-        "ghcr.io/zaproxy/zaproxy:stable",  # Use the new image
+        "zaproxy/zap-stable", 
         "zap-baseline.py", 
         "-t", f"http://localhost:{host_port}"
     ]
