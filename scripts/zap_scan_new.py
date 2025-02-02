@@ -17,7 +17,7 @@ def run_zap_scan(host_port):
     # Get current working directory
     current_directory = os.getcwd()
 
-    zap_command_str = f"docker run --network host -v {current_directory}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://localhost:{host_port}"
+    zap_command_str = f"docker run --network host -v {current_directory}:/zap/wrk/:rw zaproxy/zap-stable zap-baseline.py -t http://localhost:{host_port}"
 
     # Split the command string using shlex.split()
     zap_command = shlex.split(zap_command_str)
