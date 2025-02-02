@@ -26,7 +26,12 @@ def run_zap_scan(host_port):
     ]
 
     try:
-        print(f"Running ZAP scan on http://localhost:{host_port}...")
-        subprocess.run(zap_command, check=True)
-        print("ZAP scan completed successfully.")
-    
+       print(f"Running ZAP scan on http://localhost:{host_port}...")
+       result = subprocess.run(zap_command, check=True, capture_output=True, text=True)
+       print("ZAP scan completed successfully.")
+       print(f"ZAP Scan Output:\n{result.stdout}")
+    except subprocess.CalledProcessError as e:
+       print(f"Error running ZAP scan on port {host_port}: {e}")
+       print(f"ZAP Scan Error Output:\n{e.stderr}")
+
+
