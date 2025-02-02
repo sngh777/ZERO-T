@@ -2,7 +2,7 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
-from zap_scan_v3 import run_zap_scan
+from zap_scan_v2 import run_zap_scan
 
 
 # Initialize Docker client
@@ -160,7 +160,7 @@ def main():
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
-            run_zap_scan(container['ip'], container['host_port'])
+            run_zap_scan("localhost", container['host_port'])
         time.sleep(2)
 
         # Run Nmap scan
