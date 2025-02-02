@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import shlex
 
 def run_zap_scan(host_port):
     """Pull the zaproxy/zap-stable image and run the ZAP scan on the specified host port."""
@@ -16,7 +17,13 @@ def run_zap_scan(host_port):
     # Get current working directory
     current_directory = os.getcwd()
 
+    zap_command_str = f"docker run --network host -v {current_directory}:/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://localhost:{host_port}"
+
+    # Split the command string using shlex.split()
+    zap_command = shlex.split(zap_command_str)
+
     # Run the ZAP scan using the specified host port
+    '''
     zap_command = [
         "docker", "run", "--network", "host", 
         "-v", f"{current_directory}:/zap/wrk/:rw",  # Replace $(pwd) with current_directory
@@ -24,7 +31,7 @@ def run_zap_scan(host_port):
         "zap-baseline.py", 
         "-t", f"http://localhost:{host_port}"
     ]
-
+'''
     try:
        print(f"Running ZAP scan on http://localhost:{host_port}...")
        result = subprocess.run(zap_command, check=True, capture_output=True, text=True)
