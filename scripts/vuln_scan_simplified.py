@@ -73,7 +73,7 @@ def run_zap_scan(target_host, target_port):
     except Exception as e:
         print(f"Error running OWASP ZAP: {e}")
 
-
+'''
 
 
 def run_trivy_scan(image_name):
@@ -112,7 +112,7 @@ def run_trivy_scan(image_name):
     except docker.errors.APIError as e:
         print(f"Error running Trivy: {e}")
 
-'''
+
         
 
 def run_nmap_scan_dockerized(host, port):
