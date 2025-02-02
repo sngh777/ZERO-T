@@ -12,10 +12,13 @@ def run_zap_scan(host_port):
         print(f"Error pulling ZAP image: {e}")
         sys.exit(1)
 
+    # Get current working directory
+    current_directory = os.getcwd()
+
     # Run the ZAP scan using the specified host port
     zap_command = [
         "docker", "run", "--network", "host", 
-        "-v", "$(pwd):/zap/wrk/:rw", 
+        "-v", f"{current_directory}:/zap/wrk/:rw",  # Replace $(pwd) with current_directory
         "zaproxy/zap-stable", 
         "zap-baseline.py", 
         "-t", f"http://localhost:{host_port}"
