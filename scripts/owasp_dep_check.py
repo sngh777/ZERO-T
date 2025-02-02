@@ -20,11 +20,12 @@ def run_dependency_check():
         # Define the output directory for Dependency-Check reports
         output_dir = os.path.join(os.getcwd(), "dependency_check_reports")
         os.makedirs(output_dir, exist_ok=True)  # Create the directory if it doesn't exist
-
+        user = os.environ.get("USER")
         # Run OWASP Dependency-Check scan
         print("Starting OWASP Dependency-Check scan...")
         container = client.containers.run(
             image="owasp/dependency-check",
+            environment={"user": user},
             command=f"--project my_project --scan {scan_dir} --out {output_dir}",  # Scan the directory and save reports
             remove=True,  # Remove the container after execution
             volumes={
