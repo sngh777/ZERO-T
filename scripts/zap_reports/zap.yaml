@@ -3,7 +3,7 @@ env:
   - excludePaths: []
     name: baseline
     urls:
-    - http://172.17.0.3:8082
+    - http://localhost:8082
   parameters:
     failOnError: true
     progressToStdout: false
@@ -14,7 +14,7 @@ jobs:
   type: passiveScan-config
 - parameters:
     maxDuration: 1
-    url: http://172.17.0.3:8082
+    url: http://localhost:8082
   type: spider
 - parameters:
     maxDuration: 0
@@ -24,17 +24,3 @@ jobs:
     summaryFile: /home/zap/zap_out.json
   rules: []
   type: outputSummary
-- parameters:
-    reportDescription: ''
-    reportDir: /zap/wrk/
-    reportFile: zap_report.html
-    reportTitle: ZAP Scanning Report
-    template: traditional-html
-  type: report
-- parameters:
-    reportDescription: ''
-    reportDir: /zap/wrk/
-    reportFile: zap_out.json
-    reportTitle: ZAP Scanning Report
-    template: traditional-json
-  type: report
