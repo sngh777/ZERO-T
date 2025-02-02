@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 
 def run_zap_scan(host_port):
     """Pull the zaproxy/zap-stable image and run the ZAP scan on the specified host port."""
