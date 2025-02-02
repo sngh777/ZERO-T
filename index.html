@@ -18,11 +18,13 @@
         <div class="tab-button" onclick="showTab('tab3')">Security Aspects</div>
         <div class="tab-button" onclick="showTab('tab4')">Tools</div>
         <div class="tab-button" onclick="showTab('tab5')">CI/CD Pipeline</div>
+        <div class="tab-button" onclick="showTab('tab6')">Security Scans</div>
     </div>
 
     <div class="tab-content active" id="tab1">
         <h2>Overview</h2>
         <p>Zero Trust is a security model that requires continuous verification of all users and systems, regardless of their location, before granting access to critical resources. This model helps mitigate security risks and ensures stronger control over sensitive data and applications.</p>
+        <p>Adopting a Zero Trust strategy allows organizations to reduce the impact of breaches, gain better visibility into network activities, and maintain compliance with security regulations.</p>
     </div>
 
     <div class="tab-content" id="tab2">
@@ -32,6 +34,7 @@
             <li><strong>Least Privilege:</strong> Users and systems are granted the minimum necessary access rights to perform their tasks, reducing the potential attack surface.</li>
             <li><strong>Micro-Segmentation:</strong> Networks are divided into smaller zones to minimize lateral movement by attackers.</li>
             <li><strong>Continuous Monitoring:</strong> Real-time analysis of user activities and system behaviors to detect and mitigate potential threats.</li>
+            <li><strong>Data Encryption:</strong> Encrypting data both at rest and in transit ensures that sensitive information remains protected.</li>
         </ul>
     </div>
 
@@ -42,6 +45,7 @@
             <li><strong>Secrets Management:</strong> Secure storage and management of sensitive credentials, API keys, and other secrets.</li>
             <li><strong>Network Security:</strong> Continuous monitoring and segmentation to protect data flows and prevent unauthorized access.</li>
             <li><strong>Data Protection:</strong> Encryption and access controls to safeguard sensitive data both at rest and in transit.</li>
+            <li><strong>Incident Response:</strong> Rapid detection and containment of security threats to minimize damage.</li>
         </ul>
     </div>
 
@@ -84,6 +88,25 @@
         </div>
         <h3>Security Integration</h3>
         <p>The CI/CD pipeline integrates security at every stage, including code scanning, automated testing, and deployment validation. This ensures a secure and efficient software delivery process.</p>
+        <p>By embedding security practices into each phase of the pipeline, development teams can quickly identify and remediate vulnerabilities, resulting in a robust and resilient software deployment lifecycle.</p>
+    </div>
+
+    <div class="tab-content" id="tab6">
+        <h2>Security Scans</h2>
+        <h3>Docker Bench Security</h3>
+        <p>Docker Bench Security is a script that checks for dozens of common best practices around deploying Docker containers in production. It provides valuable insights into container configurations and security posture.</p>
+
+        <h3>OWASP ZAP Scan</h3>
+        <p>The OWASP ZAP tool is used to perform security testing for web applications by identifying vulnerabilities in a target application. It simulates potential attacks to improve application defenses.</p>
+
+        <h3>Trivy Scan</h3>
+        <p>Trivy is a comprehensive security scanner for vulnerabilities in container images, file systems, and Git repositories. It helps ensure that containerized applications remain secure from known threats.</p>
+
+        <h3>Nmap Scan</h3>
+        <p>Nmap is used for network discovery and security auditing. It provides valuable information such as services running on ports, system configurations, and potential vulnerabilities.</p>
+
+        <h3>OWASP Dependency-Check</h3>
+        <p>This tool identifies project dependencies and checks if there are any known, publicly disclosed vulnerabilities. It aids in maintaining a secure software supply chain.</p>
     </div>
 
     <script src="scripts.js"></script>
