@@ -2,7 +2,7 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
-from zap_scan_new import run_zap_scan
+#from zap_scan_new import run_zap_scan
 
 
 # Initialize Docker client
@@ -40,7 +40,7 @@ def run_docker_bench():
         print(container.decode('utf-8'))  # Print container logs
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
-'''
+
 def run_zap_scan(target_host, target_port):
     """
     Run an OWASP ZAP scan on the specified target host and port using the newer zaproxy/zap-stable image.
@@ -64,6 +64,7 @@ def run_zap_scan(target_host, target_port):
         container = client.containers.run(
             image="zaproxy/zap-stable",
             command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html -J zap_out.json",
+            network="host",
             remove=True,  # Remove the container after execution
             volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
             detach=False  # Run in the foreground
@@ -73,7 +74,7 @@ def run_zap_scan(target_host, target_port):
     except Exception as e:
         print(f"Error running OWASP ZAP: {e}")
 
-'''
+
 
 
 def run_trivy_scan(image_name):
