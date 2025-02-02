@@ -148,11 +148,10 @@ def main():
         return
 
     # Run Docker Bench security scan
+    run_docker_bench()
+    time.sleep(2)
     
-    #run_docker_bench()
-    #time.sleep(2)
-    
-    # Run OWASP Dependency-Check on $(HOME)/ZERO-T
+    # Run OWASP Dependency-Check on ZERO-T
     #run_dependency_check()
     #time.sleep(2)
     
@@ -161,8 +160,8 @@ def main():
         print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
-        #run_trivy_scan(container['image'])
-        #time.sleep(2)
+        run_trivy_scan(container['image'])
+        time.sleep(2)
         
         # Run OWASP ZAP scan if IP and port are available
         if container.get('host_port') != 'N/A':
