@@ -51,8 +51,8 @@ def run_zap_scan(host_port):
    
     try:
         # Pull the newer OWASP ZAP image
-        print("Pulling OWASP ZAP image (zaproxy/zap-stable)...")
-        client.images.pull("zaproxy/zap-stable")
+        print("Pulling OWASP ZAP image (ghcr.io/zaproxy/zaproxy:stable)...")
+        client.images.pull("ghcr.io/zaproxy/zaproxy:stable")
 
         # Define the output directory for ZAP reports
         output_dir = os.path.join(os.getcwd(), "zap_reports")
@@ -61,7 +61,7 @@ def run_zap_scan(host_port):
         # Run OWASP ZAP scan
         print("Starting OWASP ZAP scan...")
         client.containers.run(
-            "zaproxy/zap-stable",  # Use the new image
+            "ghcr.io/zaproxy/zaproxy:stable",  # Use the new image
             f"zap-baseline.py -t http://localhost:{host_port}",  # ZAP scan command
             network="host",  # Use host network mode
             volumes={output_dir: {'bind': '/zap/wrk', 'mode': 'rw'}},  # Mount current directory
