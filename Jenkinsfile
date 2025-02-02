@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     // Run the vulnerability_scan.py script
-                    sh 'python3 scripts/vulnerability_scan.py'
+                    sh 'python3 scripts/vuln_scan_simplified.py'
                 }
             }
         }
