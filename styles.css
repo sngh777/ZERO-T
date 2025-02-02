@@ -34,7 +34,8 @@ body {
 }
 
 .tab-button.active {
-    background-color: #0069d9;
+    background-color: #007bff;
+    color: #ffffff;
 }
 
 .tab-content {
@@ -76,6 +77,12 @@ li {
     width: 200px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
+    transition: transform 0.2s;
+}
+
+.tool-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .tool-card h3 {
@@ -98,6 +105,7 @@ li {
 
 .repository-structure ul {
     padding-left: 20px;
+    border-left: 2px solid #ddd;
 }
 
 .repository-structure li {
@@ -110,3 +118,42 @@ li {
     padding-right: 10px;
 }
 
+@media (max-width: 1024px) {
+    .tabs {
+        justify-content: center;
+    }
+
+    .tool-list {
+        gap: 10px;
+    }
+
+    .tool-card {
+        width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tool-list {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        font-size: 18px;
+        padding: 10px;
+    }
+
+    .tab-button {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .tool-card {
+        width: 100%;
+    }
+}
