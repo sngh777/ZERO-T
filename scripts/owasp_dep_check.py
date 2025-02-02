@@ -3,13 +3,17 @@ import docker
 client = docker.from_env()
 
 def run_dependency_check():
-    """
-    Run OWASP Dependency-Check to scan the $(HOME)/ZERO-T directory for vulnerabilities in dependencies.
-    """
+   
+    #Run OWASP Dependency-Check to scan the $(HOME)/ZERO-T directory for vulnerabilities in dependencies.
+    
     # Get the home directory and set the scan directory to $(HOME)/ZERO-T
-    home_dir = os.path.expanduser("~")
-    scan_dir = os.path.join(home_dir, "ZERO-T")
-
+    #home_dir = os.path.expanduser("~")
+    #scan_dir = os.path.join(home_dir, "ZERO-T")
+    """
+    Run OWASP Dependency-Check to scan the parent directory of the current working directory.
+    """
+    # Get the parent directory of the current working directory
+    scan_dir = os.path.dirname(os.getcwd())
     print(f"Running OWASP Dependency-Check on directory: {scan_dir}...")
 
     try:
