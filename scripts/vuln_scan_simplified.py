@@ -2,7 +2,7 @@ import os
 import time
 import docker
 from findContainers import find_web_containers
-from zap_scan_new import run_zap_scan
+from zap_scan_almost import run_zap_scan
 
 
 # Initialize Docker client
