@@ -128,7 +128,8 @@ def run_nmap_scan_dockerized(host, port):
         container = client.containers.run(
             image="instrumentisto/nmap",
             command=f"-sV -Pn {host} -p {port}",  # Scan the host and specific port
-            remove=True,  # Remove the container after execution
+            remove=True,# Remove the container after execution
+            network_mode="host",
             detach=False  # Run in the foreground
         )
         print(container.decode('utf-8'))  # Print Nmap scan logs
