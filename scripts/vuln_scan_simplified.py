@@ -41,15 +41,14 @@ def run_docker_bench():
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
 
-def run_zap_scan(target_host, target_port):
+def run_zap_scan(host_port):
     """
     Run an OWASP ZAP scan on the specified target host and port using the newer zaproxy/zap-stable image.
     
     :param target_host: The host to scan (e.g., 'localhost').
     :param target_port: The port to scan (e.g., 8080).
     """
-    print(f"Running OWASP ZAP scan on {target_host}:{target_port}...")
-
+   
     try:
         # Pull the newer OWASP ZAP image
         print("Pulling OWASP ZAP image (zaproxy/zap-stable)...")
@@ -61,14 +60,16 @@ def run_zap_scan(target_host, target_port):
 
         # Run OWASP ZAP scan
         print("Starting OWASP ZAP scan...")
-        container = client.containers.run(
-            image="zaproxy/zap-stable",
-            command=f"zap-baseline.py -t http://{target_host}:{target_port} -r zap_report.html -J zap_out.json",
-            network="host",
-            remove=True,  # Remove the container after execution
-            volumes={output_dir: {"bind": "/zap/wrk", "mode": "rw"}},  # Mount the output directory
-            detach=False  # Run in the foreground
+        client.containers.run(
+            "zaproxy/zap-stable",  # Use the new image
+            f"zap-baseline.py -t http://localhost:{host_port}",  # ZAP scan command
+            network="host",  # Use host network mode
+            volumes={current_directory: {'bind': '/zap/wrk', 'mode': 'rw'}},  # Mount current directory
+            remove=True,  # Remove container after execution
+            stdout=True,  # Show stdout
+            stderr=True  # Show stderr
         )
+        print("ZAP scan completed successfully.")
         print(container.decode('utf-8'))  # Print ZAP scan logs
         print(f"ZAP scan completed. Reports saved in '{output_dir}'.")
     except Exception as e:
@@ -161,7 +162,7 @@ def main():
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
-            run_zap_scan("localhost",container['host_port'])
+            run_zap_scan(container['host_port'])
         time.sleep(2)
 
         # Run Nmap scan
