@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Run the build_and_run_container.py script to start the container
-                    sh 'python3 scripts/build_run_cont.py'
+                    sh 'python3 build_run_cont.py'
                     
                     // Run the findContainers.py script to list web containers
                     sh 'python3 scripts/findContainers.py'
