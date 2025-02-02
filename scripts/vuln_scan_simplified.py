@@ -148,8 +148,8 @@ def main():
         return
 
     # Run Docker Bench security scan
-    run_docker_bench()
-    time.sleep(2)
+   # run_docker_bench()
+   # time.sleep(2)
     
     # Run OWASP Dependency-Check on ZERO-T
     run_dependency_check()
@@ -158,7 +158,7 @@ def main():
     # Iterate over each web container and run scans
     for container in web_containers:
         print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
-
+'''
         # Run Trivy scan
         run_trivy_scan(container['image'])
         time.sleep(2)
@@ -172,6 +172,6 @@ def main():
         if container.get('host_port') != 'N/A':
             run_nmap_scan_dockerized("localhost",container['host_port'])
         time.sleep(2)
-        
+ '''       
 if __name__ == '__main__':
     main()
