@@ -15,7 +15,7 @@ def run_zap_scan(host_port):
     zap_command = [
         "docker", "run", "--network", "host",
         "-v", f"{current_dir}:/zap/wrk/:rw",
-        "--user", f"{os.getuid()}:{os.getgid()}",
+        "--user", "root",
         "zaproxy/zap-stable",
         "zap-baseline.py",
         "-t", f"http://localhost:{host_port}",
