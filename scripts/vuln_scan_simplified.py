@@ -152,8 +152,8 @@ def main():
     time.sleep(2)
     
     # Run OWASP Dependency-Check on ZERO-T
-    #run_dependency_check()
-    #time.sleep(2)
+    run_dependency_check()
+    time.sleep(2)
     
     # Iterate over each web container and run scans
     for container in web_containers:
