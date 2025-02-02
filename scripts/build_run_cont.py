@@ -16,7 +16,7 @@ def build_and_run_container():
 
     # Step 1: Build the Docker image
     print("Building Docker image 'nginx-server'...")
-    client.images.build(path=".", tag="nginx-server")
+    client.images.build(path="/", tag="nginx-server")
 
     # Step 2: Find a free port starting from 8080
     free_port = find_free_port(8080)
