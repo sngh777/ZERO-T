@@ -1,3 +1,5 @@
+import os
+
 def run_dependency_check():
     """
     Run OWASP Dependency-Check to scan the $(HOME)/ZERO-T directory for vulnerabilities in dependencies.
