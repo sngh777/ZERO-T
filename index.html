@@ -22,22 +22,26 @@
 
     <div class="tab-content active" id="tab1">
         <h2>Overview</h2>
-        <p>Zero Trust is a security model that requires verification of all users and systems, regardless of their location, before granting access to resources...</p>
+        <p>Zero Trust is a security model that requires continuous verification of all users and systems, regardless of their location, before granting access to critical resources. This model helps mitigate security risks and ensures stronger control over sensitive data and applications.</p>
     </div>
 
     <div class="tab-content" id="tab2">
         <h2>Zero Trust Principles</h2>
         <ul>
-            <li><strong>Strict Access Controls:</strong> Only authorized users and systems...</li>
-            <li><strong>Least Privilege:</strong> Users and systems are granted the minimum necessary...</li>
+            <li><strong>Strict Access Controls:</strong> Only authorized users and systems are allowed access, with continuous verification to maintain trust.</li>
+            <li><strong>Least Privilege:</strong> Users and systems are granted the minimum necessary access rights to perform their tasks, reducing the potential attack surface.</li>
+            <li><strong>Micro-Segmentation:</strong> Networks are divided into smaller zones to minimize lateral movement by attackers.</li>
+            <li><strong>Continuous Monitoring:</strong> Real-time analysis of user activities and system behaviors to detect and mitigate potential threats.</li>
         </ul>
     </div>
 
     <div class="tab-content" id="tab3">
         <h2>Aspects of Zero Trust Security</h2>
         <ul>
-            <li><strong>Identity and Access Management</strong>: Strong user authentication...</li>
-            <li><strong>Secrets Management</strong>: Secure storage and management of sensitive credentials...</li>
+            <li><strong>Identity and Access Management (IAM):</strong> Strong user authentication and access control mechanisms to protect critical resources.</li>
+            <li><strong>Secrets Management:</strong> Secure storage and management of sensitive credentials, API keys, and other secrets.</li>
+            <li><strong>Network Security:</strong> Continuous monitoring and segmentation to protect data flows and prevent unauthorized access.</li>
+            <li><strong>Data Protection:</strong> Encryption and access controls to safeguard sensitive data both at rest and in transit.</li>
         </ul>
     </div>
 
@@ -46,11 +50,19 @@
         <div class="tool-list">
             <div class="tool-card">
                 <h3>HashiCorp Vault</h3>
-                <p>Secret management tool...</p>
+                <p>A powerful secret management tool used for securely storing and accessing sensitive data, such as API keys, passwords, and certificates.</p>
             </div>
             <div class="tool-card">
                 <h3>SonarQube</h3>
-                <p>Static code analysis tool...</p>
+                <p>A static code analysis tool that helps detect security vulnerabilities and maintain code quality throughout the software development lifecycle.</p>
+            </div>
+            <div class="tool-card">
+                <h3>Terraform</h3>
+                <p>An infrastructure-as-code tool that allows consistent and repeatable provisioning of cloud and on-premise resources.</p>
+            </div>
+            <div class="tool-card">
+                <h3>Jenkins</h3>
+                <p>A widely used automation tool that facilitates continuous integration and delivery (CI/CD) pipelines.</p>
             </div>
         </div>
     </div>
@@ -62,16 +74,18 @@
             <ul>
                 <li>zero-trust-cicd-pipeline/
                     <ul>
-                        <li>docs/  # Documentation and design details</li>
-                        <li>configurations/  # Configuration files for tools</li>
-                        <li>scripts/  # Custom automation scripts</li>
+                        <li>docs/  # Documentation and design details for the pipeline</li>
+                        <li>configurations/  # Configuration files for security and deployment tools</li>
+                        <li>scripts/  # Custom automation scripts for deployment and maintenance tasks</li>
+                        <li>tests/  # Automated tests for ensuring code quality and security compliance</li>
                     </ul>
                 </li>
             </ul>
         </div>
+        <h3>Security Integration</h3>
+        <p>The CI/CD pipeline integrates security at every stage, including code scanning, automated testing, and deployment validation. This ensures a secure and efficient software delivery process.</p>
     </div>
 
     <script src="scripts.js"></script>
 </body>
 </html>
-
