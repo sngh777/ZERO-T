@@ -1,5 +1,6 @@
 import time
 import subprocess
+import sys
 import socket
 from zapv2 import ZAPv2
 
@@ -38,11 +39,16 @@ def run_zap_scan(target_ip: str, target_port: int):
 
         # Ensure ZAP Python API is installed
         try:
-            from zapv2 import ZAPv2
+           from zapv2 import ZAPv2
         except ImportError:
-            print("Installing OWASP ZAP Python API...")
-            subprocess.check_call(['pip', 'install', 'python-owasp-zap-v2.4'])
-            from zapv2 import ZAPv2
+           print("The 'zapv2' module is not installed. Attempting to install it now...")
+           try:
+             subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'python-owasp-zap-v2.4'])
+             from zapv2 import ZAPv2
+             print("'zapv2' module installed successfully.")
+           except Exception as e:
+             print(f"Failed to install 'zapv2' module: {e}")
+             sys.exit(1)
 
         ZAP_BASE_URL = f'http://localhost:{zap_port}'
         target_url = f'http://{target_ip}:{target_port}'
