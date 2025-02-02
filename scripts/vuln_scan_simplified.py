@@ -147,18 +147,18 @@ def main():
         return
 
     # Run Docker Bench security scan
-    '''
-    #run_docker_bench()
+    
+    run_docker_bench()
     time.sleep(2)
-    '''
+    
 
     # Iterate over each web container and run scans
     for container in web_containers:
-        #print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
+        print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
-        #run_trivy_scan(container['image'])
-        #time.sleep(2)
+        run_trivy_scan(container['image'])
+        time.sleep(2)
 
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
