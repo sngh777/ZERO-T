@@ -1,4 +1,6 @@
 import os
+import docker
+client = docker.from_env()
 
 def run_dependency_check():
     """
