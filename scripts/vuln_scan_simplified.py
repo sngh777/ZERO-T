@@ -3,6 +3,7 @@ import time
 import docker
 from findContainers import find_web_containers
 from zap_scan_almost import run_zap_scan
+from owasp_dep_check import run_dependency_check
 
 
 # Initialize Docker client
@@ -148,18 +149,18 @@ def main():
 
     # Run Docker Bench security scan
     
-    run_docker_bench()
-    time.sleep(2)
+    #run_docker_bench()
+    #time.sleep(2)
     
-
+    run_dependency_check()
     # Iterate over each web container and run scans
     for container in web_containers:
         print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
-        run_trivy_scan(container['image'])
-        time.sleep(2)
-
+        #run_trivy_scan(container['image'])
+        #time.sleep(2)
+        '''
         # Run OWASP ZAP scan if IP and port are available
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
             run_zap_scan(container['host_port'])
@@ -169,6 +170,6 @@ def main():
         if container.get('ip') != 'N/A' and container.get('host_port') != 'N/A':
             run_nmap_scan_dockerized("localhost",container['host_port'])
         time.sleep(2)
-
+        '''
 if __name__ == '__main__':
     main()
