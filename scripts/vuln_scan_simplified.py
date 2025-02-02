@@ -64,7 +64,7 @@ def run_zap_scan(host_port):
             "zaproxy/zap-stable",  # Use the new image
             f"zap-baseline.py -t http://localhost:{host_port}",  # ZAP scan command
             network="host",  # Use host network mode
-            volumes={current_directory: {'bind': '/zap/wrk', 'mode': 'rw'}},  # Mount current directory
+            volumes={output_dir: {'bind': '/zap/wrk', 'mode': 'rw'}},  # Mount current directory
             remove=True,  # Remove container after execution
             stdout=True,  # Show stdout
             stderr=True  # Show stderr
