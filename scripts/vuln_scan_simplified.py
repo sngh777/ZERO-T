@@ -153,6 +153,7 @@ def main():
     #time.sleep(2)
     
     run_dependency_check()
+    time.sleep(2)
     # Iterate over each web container and run scans
     for container in web_containers:
         print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
