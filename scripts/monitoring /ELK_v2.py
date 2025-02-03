@@ -7,6 +7,9 @@ import uuid
 
 # Initialize Docker client
 client = docker.from_env(timeout=120)  # 120 seconds timeout
+# Define the base directory where logstash/config is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Absolute path of the current script directory
+
 
 
 # List of Docker images to pull
