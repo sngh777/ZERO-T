@@ -101,6 +101,8 @@ def start_docker_containers():
             name=elasticsearch_container_name,
             environment={"discovery.type": "single-node"},
             ports={f'9200/tcp': elasticsearch_host_port},
+            mem_limit='2g',  # Allocate more memory if necessary
+            cpu_shares=1024,  # Allocate more CPU if necessary
             detach=True
         )
 
@@ -123,10 +125,11 @@ def start_docker_containers():
         logstash_host_port = get_random_port()
         logstash_container_name = generate_unique_container_name("logstash")
         print(f"Starting Logstash container {logstash_container_name} on host port {logstash_host_port}...")
+        logstash_config_path = os.path.join(BASE_DIR, 'logstash', 'config')
         logstash_container = client.containers.run(
             'docker.elastic.co/logstash/logstash:8.17.1',
             name=logstash_container_name,
-            volumes={'./logstash/config': {'bind': '/usr/share/logstash/pipeline', 'mode': 'rw'}},
+            volumes={logstash_config_path: {'bind': '/usr/share/logstash/pipeline', 'mode': 'rw'}},
             ports={f'5044/tcp': logstash_host_port},
             detach=True
         )
