@@ -31,8 +31,8 @@ def add_user_to_docker_group():
         print("Jenkins user added to Docker group.")
 
         # Set permissions for the Docker socket
-        subprocess.run(["sudo", "chmod", "666", "/var/run/docker.sock"], check=True)
-        print("Docker socket permissions updated to 666.")
+        #subprocess.run(["sudo", "chmod", "666", "/var/run/docker.sock"], check=True)
+        #print("Docker socket permissions updated to 666.")
        
 
         # Add the current user to the Docker group
