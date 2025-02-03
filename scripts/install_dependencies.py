@@ -7,10 +7,13 @@ import getpass
 def install_pip():
     """Ensure pip is installed for Python 3."""
     try:
-        subprocess.check_call([sys.executable, "-m", "ensurepip", "--upgrade"])
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing pip: {e}")
-        sys.exit(1)
+        subprocess.check_call([sys.executable, "-m", "pip", "--version"])
+        print("pip is already installed.")
+    except subprocess.CalledProcessError:
+        print("pip not found. Installing pip...")
+        # Install pip using apt
+        # subprocess.check_call(["sudo", "apt", "update"])  # Update package list
+        subprocess.check_call(["sudo", "apt", "install", "-y", "python3-pip"])  # Install pip
 
 def install_docker_python_module():
     try:
