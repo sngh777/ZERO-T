@@ -3,7 +3,8 @@ import subprocess
 import os
 
 # Initialize Docker client
-client = docker.from_env()
+client = docker.from_env(timeout=120)  # 120 seconds timeout
+
 
 # List of Docker images to pull
 images = [
