@@ -43,7 +43,7 @@ def create_prometheus():
         ports={'9090/tcp': 9090},
         volumes={
             prometheus_config_path: {'bind': '/etc/prometheus/prometheus.yml', 'mode': 'ro'},
-            '/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'ro'}
+            '/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'ro'}  # Mount Docker socket
         },
         detach=True,
         network="monitoring_network"
