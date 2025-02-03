@@ -95,12 +95,12 @@ def install_owasp_zap():
     """Ensure OWASP ZAP Docker image is available."""
     print("Checking if OWASP ZAP Docker image is available...")
     try:
-        subprocess.run(["docker", "images", "owasp/zap2docker-stable"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["docker", "images", "zaproxy/zap-stable"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print("OWASP ZAP Docker image is already available.")
     except subprocess.CalledProcessError:
         print("OWASP ZAP Docker image is not available. Pulling the image...")
         try:
-            subprocess.run(["docker", "pull", "owasp/zap2docker-stable"], check=True)
+            subprocess.run(["docker", "pull", "zaproxy/zap-stable"], check=True)
             print("OWASP ZAP Docker image pulled successfully.")
         except Exception as e:
             print(f"Failed to pull OWASP ZAP Docker image: {e}")
