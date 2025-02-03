@@ -19,7 +19,7 @@ def install_docker():
         except Exception as e:
             print(f"Failed to install Docker: {e}")
             sys.exit(1)
-
+'''
 def add_user_to_docker_group():
     """Add the Jenkins user to the Docker group and set permissions for the Docker socket."""
     print("Adding Jenkins user to Docker group and setting Docker socket permissions...")
@@ -48,7 +48,7 @@ def add_user_to_docker_group():
     except Exception as e:
         print(f"Failed to configure Docker permissions: {e}")
         sys.exit(1)
-
+'''
 def install_trivy():
     """Install Trivy if it is not already installed."""
     print("Checking if Trivy is installed...")
