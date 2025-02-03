@@ -4,6 +4,14 @@ import os
 import shutil
 import getpass
 
+def install_pip():
+    """Ensure pip is installed for Python 3."""
+    try:
+        subprocess.check_call([sys.executable, "-m", "ensurepip", "--upgrade"])
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing pip: {e}")
+        sys.exit(1)
+
 def install_docker_python_module():
     try:
         import docker
@@ -112,6 +120,7 @@ def install_nmap():
 def main():
     # Install Docker
     install_docker()
+    install_pip()
     install_docker_python_module()
 
     # Add the Jenkins user to the Docker group and set Docker socket permissions
