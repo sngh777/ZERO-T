@@ -7,11 +7,11 @@ client = docker.from_env()
 
 # List of Docker images to pull
 images = [
-    'docker.elastic.co/elasticsearch/elasticsearch:8.6.0',
-    'docker.elastic.co/kibana/kibana:8.6.0',
-    'docker.elastic.co/logstash/logstash:8.6.0',
-    'docker.elastic.co/beats/filebeat:8.6.0',
-    'docker.elastic.co/beats/metricbeat:8.6.0'
+    'docker.elastic.co/elasticsearch/elasticsearch:8.17.1',
+    'docker.elastic.co/kibana/kibana:8.17.1',
+    'docker.elastic.co/logstash/logstash:8.17.1',
+    'docker.elastic.co/beats/filebeat:8.17.1',
+    'docker.elastic.co/beats/metricbeat:8.17.1'
 ]
 
 # Pull images from Docker Hub
@@ -56,7 +56,7 @@ def start_docker_containers():
         # Start Elasticsearch container
         print("Starting Elasticsearch container...")
         client.containers.run(
-            'docker.elastic.co/elasticsearch/elasticsearch:8.6.0',
+            'docker.elastic.co/elasticsearch/elasticsearch:8.17.1',
             name='elasticsearch',
             environment={"discovery.type": "single-node"},
             ports={'9200/tcp': 9200},
@@ -66,7 +66,7 @@ def start_docker_containers():
         # Start Kibana container
         print("Starting Kibana container...")
         client.containers.run(
-            'docker.elastic.co/kibana/kibana:8.6.0',
+            'docker.elastic.co/kibana/kibana:8.17.1',
             name='kibana',
             environment={"ELASTICSEARCH_URL": "http://elasticsearch:9200"},
             ports={'5601/tcp': 5601},
@@ -77,7 +77,7 @@ def start_docker_containers():
         # Start Logstash container (with default config)
         print("Starting Logstash container...")
         client.containers.run(
-            'docker.elastic.co/logstash/logstash:8.6.0',
+            'docker.elastic.co/logstash/logstash:8.17.1',
             name='logstash',
             volumes={'./logstash/config': {'bind': '/usr/share/logstash/pipeline', 'mode': 'rw'}},
             ports={'5044/tcp': 5044},
@@ -87,7 +87,7 @@ def start_docker_containers():
         # Start Filebeat container
         print("Starting Filebeat container...")
         client.containers.run(
-            'docker.elastic.co/beats/filebeat:8.6.0',
+            'docker.elastic.co/beats/filebeat:8.17.1',
             name='filebeat',
             volumes={'/var/lib/docker/containers': {'bind': '/var/lib/docker/containers', 'mode': 'ro'},
                      './filebeat.yml': {'bind': '/etc/filebeat/filebeat.yml', 'mode': 'ro'}},
@@ -97,7 +97,7 @@ def start_docker_containers():
         # Start Metricbeat container
         print("Starting Metricbeat container...")
         client.containers.run(
-            'docker.elastic.co/beats/metricbeat:8.6.0',
+            'docker.elastic.co/beats/metricbeat:8.17.1',
             name='metricbeat',
             volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'ro'},
                      './metricbeat.yml': {'bind': '/etc/metricbeat/metricbeat.yml', 'mode': 'ro'}},
