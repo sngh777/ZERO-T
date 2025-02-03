@@ -72,7 +72,7 @@ def start_docker_containers():
         print("Starting Elasticsearch container...")
         client.containers.run(
             'docker.elastic.co/elasticsearch/elasticsearch:8.17.1',
-            name='elasticsearch',
+            name='elasticsearch_container',
             environment={"discovery.type": "single-node"},
             ports={'9200/tcp': 9200},
             detach=True
