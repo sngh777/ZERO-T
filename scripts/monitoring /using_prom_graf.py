@@ -40,6 +40,7 @@ def create_prometheus():
     client.containers.run(
         "prom/prometheus",
         name=prometheus_container_name,
+        network_mode='host', 
         ports={'9090/tcp': 9090},
         volumes={
             prometheus_config_path: {'bind': '/etc/prometheus/prometheus.yml', 'mode': 'ro'},
@@ -55,6 +56,7 @@ def create_grafana():
     client.containers.run(
         "grafana/grafana",
         name=grafana_container_name,
+        network_mode='host', 
         ports={'3000/tcp': 3000},
         environment={"GF_SECURITY_ADMIN_PASSWORD": "admin"},
         detach=True
