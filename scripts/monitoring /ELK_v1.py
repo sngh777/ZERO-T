@@ -1,6 +1,7 @@
 import docker
 import subprocess
 import os
+import time
 
 # Initialize Docker client
 client = docker.from_env(timeout=120)  # 120 seconds timeout
@@ -51,7 +52,20 @@ def generate_metricbeat_config():
         f.write(metricbeat_config)
     print("Generated metricbeat.yml")
 
-# Function to start containers using Docker
+def wait_for_elasticsearch():
+    print("Waiting for Elasticsearch to be ready...")
+    max_retries = 30
+    for i in range(max_retries):
+        try:
+            response = client.containers.get('elasticsearch').exec_run('curl -X GET http://localhost:9200')
+            if b'cluster_name' in response.output:
+                print("Elasticsearch is ready.")
+                return
+        except Exception:
+            pass
+        time.sleep(2)
+    print("Elasticsearch did not become ready in time.")
+
 def start_docker_containers():
     try:
         # Start Elasticsearch container
@@ -64,6 +78,9 @@ def start_docker_containers():
             detach=True
         )
 
+        # Wait until Elasticsearch is ready
+        wait_for_elasticsearch()
+
         # Start Kibana container
         print("Starting Kibana container...")
         client.containers.run(
@@ -71,11 +88,10 @@ def start_docker_containers():
             name='kibana',
             environment={"ELASTICSEARCH_URL": "http://elasticsearch:9200"},
             ports={'5601/tcp': 5601},
-            depends_on=['elasticsearch'],
             detach=True
         )
 
-        # Start Logstash container (with default config)
+        # Start other containers
         print("Starting Logstash container...")
         client.containers.run(
             'docker.elastic.co/logstash/logstash:8.17.1',
@@ -85,7 +101,6 @@ def start_docker_containers():
             detach=True
         )
 
-        # Start Filebeat container
         print("Starting Filebeat container...")
         client.containers.run(
             'docker.elastic.co/beats/filebeat:8.17.1',
@@ -95,7 +110,6 @@ def start_docker_containers():
             detach=True
         )
 
-        # Start Metricbeat container
         print("Starting Metricbeat container...")
         client.containers.run(
             'docker.elastic.co/beats/metricbeat:8.17.1',
