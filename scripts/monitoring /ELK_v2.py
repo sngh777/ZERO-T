@@ -139,23 +139,27 @@ def start_docker_containers():
 
         # Start Filebeat container
         filebeat_container_name = generate_unique_container_name("filebeat")
+        filebeat_config_path = os.path.join(BASE_DIR, 'filebeat.yml')
+
         print(f"Starting Filebeat container {filebeat_container_name}...")
         filebeat_container = client.containers.run(
             'docker.elastic.co/beats/filebeat:8.17.1',
             name=filebeat_container_name,
             volumes={'/var/lib/docker/containers': {'bind': '/var/lib/docker/containers', 'mode': 'ro'},
-                     './filebeat.yml': {'bind': '/etc/filebeat/filebeat.yml', 'mode': 'ro'}},
+                     filebeat_config_path: {'bind': '/etc/filebeat/filebeat.yml', 'mode': 'ro'}},
             detach=True
         )
 
         # Start Metricbeat container
         metricbeat_container_name = generate_unique_container_name("metricbeat")
+        metricbeat_config_path = os.path.join(BASE_DIR, 'metricbeat.yml')
+
         print(f"Starting Metricbeat container {metricbeat_container_name}...")
         metricbeat_container = client.containers.run(
             'docker.elastic.co/beats/metricbeat:8.17.1',
             name=metricbeat_container_name,
             volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'ro'},
-                     './metricbeat.yml': {'bind': '/etc/metricbeat/metricbeat.yml', 'mode': 'ro'}},
+                     metricbeat_config_path: {'bind': '/etc/metricbeat/metricbeat.yml', 'mode': 'ro'}},
             detach=True
         )
 
