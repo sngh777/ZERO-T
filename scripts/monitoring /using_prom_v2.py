@@ -19,6 +19,8 @@ scrape_configs:
   - job_name: 'docker-containers'
     docker_sd_configs:
       - host: "unix:///var/run/docker.sock"  # Docker socket for service discovery
+    static_configs:
+      - targets: ['cadvisor:8090'] 
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
         target_label: container
