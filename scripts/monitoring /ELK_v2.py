@@ -57,12 +57,13 @@ def generate_metricbeat_config():
         f.write(metricbeat_config)
     print("Generated metricbeat.yml")
 
-def wait_for_elasticsearch():
+def wait_for_elasticsearch(elasticsearch_host_port):
     print("Waiting for Elasticsearch to be ready...")
     max_retries = 30
     for i in range(max_retries):
         try:
-            response = client.containers.get('elasticsearch').exec_run('curl -X GET http://localhost:9200')
+            url = 'http://localhost:{}'.format(elasticsearch_host_port)
+            response = client.containers.get('elasticsearch').exec_run('curl -X GET {}'.format(url))
             if b'cluster_name' in response.output:
                 print("Elasticsearch is ready.")
                 return
@@ -110,7 +111,7 @@ def start_docker_containers():
         )
 
         # Wait until Elasticsearch is ready
-        wait_for_elasticsearch()
+        wait_for_elasticsearch(elasticsearch_host_port)
 
         # Start Kibana container
         kibana_host_port = get_random_port()
