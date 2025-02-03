@@ -148,8 +148,8 @@ def main():
         return
 
     # Run Docker Bench security scan
-   run_docker_bench()
-   time.sleep(2)
+    run_docker_bench()
+    time.sleep(2)
     
     # Run OWASP Dependency-Check on ZERO-T
     #run_dependency_check()
