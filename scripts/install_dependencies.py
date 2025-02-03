@@ -86,13 +86,19 @@ def install_owasp_zap():
             print(f"Failed to pull OWASP ZAP Docker image: {e}")
             sys.exit(1)
 
+
+
 def install_nmap():
-    # Check if nmap is available
     if shutil.which("nmap") is None:
         print("nmap not found. Installing nmap...")
-        subprocess.run(["sudo", "apt-get", "install", "-y", "nmap"], check=True)
+        try:
+            # Check if user can install without sudo (or do some other check)
+            subprocess.run(["sudo","apt-get", "install", "-y", "nmap"], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing nmap: {e}")
     else:
         print("nmap is already installed.")
+
 
 def main():
     # Install Docker
