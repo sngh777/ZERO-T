@@ -3,6 +3,7 @@ import subprocess
 import os
 import time
 import random
+import uuid
 
 # Initialize Docker client
 client = docker.from_env(timeout=120)  # 120 seconds timeout
@@ -85,14 +86,19 @@ def get_random_port(start_port=9001, end_port=9999):
             # Port is already in use, retry
             continue
 
+def generate_unique_container_name(base_name):
+    """Generate a unique container name by appending a random UUID."""
+    return f"{base_name}_{uuid.uuid4().hex[:6]}"
+
 def start_docker_containers():
     try:
         # Start Elasticsearch container
         elasticsearch_host_port = get_random_port()
-        print(f"Starting Elasticsearch container on host port {elasticsearch_host_port}...")
+        elasticsearch_container_name = generate_unique_container_name("elasticsearch_container")
+        print(f"Starting Elasticsearch container {elasticsearch_container_name} on host port {elasticsearch_host_port}...")
         elasticsearch_container = client.containers.run(
             'docker.elastic.co/elasticsearch/elasticsearch:8.17.1',
-            name='elasticsearch_container',
+            name=elasticsearch_container_name,
             environment={"discovery.type": "single-node"},
             ports={f'9200/tcp': elasticsearch_host_port},
             detach=True
@@ -103,10 +109,11 @@ def start_docker_containers():
 
         # Start Kibana container
         kibana_host_port = get_random_port()
-        print(f"Starting Kibana container on host port {kibana_host_port}...")
+        kibana_container_name = generate_unique_container_name("kibana")
+        print(f"Starting Kibana container {kibana_container_name} on host port {kibana_host_port}...")
         kibana_container = client.containers.run(
             'docker.elastic.co/kibana/kibana:8.17.1',
-            name='kibana',
+            name=kibana_container_name,
             environment={"ELASTICSEARCH_URL": f"http://elasticsearch:{elasticsearch_host_port}"},
             ports={f'5601/tcp': kibana_host_port},
             detach=True
@@ -114,30 +121,33 @@ def start_docker_containers():
 
         # Start Logstash container
         logstash_host_port = get_random_port()
-        print(f"Starting Logstash container on host port {logstash_host_port}...")
+        logstash_container_name = generate_unique_container_name("logstash")
+        print(f"Starting Logstash container {logstash_container_name} on host port {logstash_host_port}...")
         logstash_container = client.containers.run(
             'docker.elastic.co/logstash/logstash:8.17.1',
-            name='logstash',
+            name=logstash_container_name,
             volumes={'./logstash/config': {'bind': '/usr/share/logstash/pipeline', 'mode': 'rw'}},
             ports={f'5044/tcp': logstash_host_port},
             detach=True
         )
 
         # Start Filebeat container
-        print("Starting Filebeat container...")
+        filebeat_container_name = generate_unique_container_name("filebeat")
+        print(f"Starting Filebeat container {filebeat_container_name}...")
         filebeat_container = client.containers.run(
             'docker.elastic.co/beats/filebeat:8.17.1',
-            name='filebeat',
+            name=filebeat_container_name,
             volumes={'/var/lib/docker/containers': {'bind': '/var/lib/docker/containers', 'mode': 'ro'},
                      './filebeat.yml': {'bind': '/etc/filebeat/filebeat.yml', 'mode': 'ro'}},
             detach=True
         )
 
         # Start Metricbeat container
-        print("Starting Metricbeat container...")
+        metricbeat_container_name = generate_unique_container_name("metricbeat")
+        print(f"Starting Metricbeat container {metricbeat_container_name}...")
         metricbeat_container = client.containers.run(
             'docker.elastic.co/beats/metricbeat:8.17.1',
-            name='metricbeat',
+            name=metricbeat_container_name,
             volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'ro'},
                      './metricbeat.yml': {'bind': '/etc/metricbeat/metricbeat.yml', 'mode': 'ro'}},
             detach=True
@@ -167,4 +177,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
