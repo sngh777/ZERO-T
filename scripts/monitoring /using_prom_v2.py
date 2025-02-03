@@ -68,7 +68,7 @@ def check_prometheus():
     print("Waiting for Prometheus to be ready...")
     for _ in range(30):  # Retry up to 30 times (5 minutes max)
         try:
-            response = requests.get("http://localhost:9090/api/v1/query?query=1+1")
+            response = requests.get("http://localhost:9090/api/v1/query?query=1")
             if response.status_code == 200:
                 print("Prometheus is up and ready.")
                 return True
