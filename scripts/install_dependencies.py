@@ -4,6 +4,15 @@ import os
 import shutil
 import getpass
 
+def install_docker_python_module():
+    try:
+        import docker
+    except ImportError:
+        print("docker module not found. Installing docker-py...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "docker"])
+    else:
+        print("docker module is already installed.")
+
 def install_docker():
     """Install Docker if it is not already installed."""
     print("Checking if Docker is installed...")
@@ -103,6 +112,7 @@ def install_nmap():
 def main():
     # Install Docker
     install_docker()
+    install_docker_python_module()
 
     # Add the Jenkins user to the Docker group and set Docker socket permissions
     #add_user_to_docker_group()
