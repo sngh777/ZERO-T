@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import shutil
 import getpass
 
 def install_docker():
@@ -86,19 +87,12 @@ def install_owasp_zap():
             sys.exit(1)
 
 def install_nmap():
-    """Install Nmap if it is not already installed."""
-    print("Checking if Nmap is installed...")
-    try:
-        subprocess.run(["nmap", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print("Nmap is already installed.")
-    except subprocess.CalledProcessError:
-        print("Nmap is not installed. Installing Nmap...")
-        try:
-            subprocess.run(["sudo", "apt-get", "install", "-y", "nmap"], check=True)
-            print("Nmap installed successfully.")
-        except Exception as e:
-            print(f"Failed to install Nmap: {e}")
-            sys.exit(1)
+    # Check if nmap is available
+    if shutil.which("nmap") is None:
+        print("nmap not found. Installing nmap...")
+        subprocess.run(["sudo", "apt-get", "install", "-y", "nmap"], check=True)
+    else:
+        print("nmap is already installed.")
 
 def main():
     # Install Docker
