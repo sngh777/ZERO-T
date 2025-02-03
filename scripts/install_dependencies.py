@@ -105,7 +105,7 @@ def main():
     install_docker()
 
     # Add the Jenkins user to the Docker group and set Docker socket permissions
-    add_user_to_docker_group()
+    #add_user_to_docker_group()
 
     # Install Trivy
     install_trivy()
