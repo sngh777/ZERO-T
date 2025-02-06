@@ -1,7 +1,7 @@
 import os
 import time
 import docker
-from findContainers import find_web_containers
+from find_viaSSH import find_web_containers_via_ssh
 from zap_scan_almost import run_zap_scan
 from owasp_dep_check import run_dependency_check
 
@@ -141,15 +141,15 @@ def run_nmap_scan_dockerized(host, port):
 
 def main():
     # Find all web containers
-    web_containers = find_web_containers()
+    web_containers = find_web_containers_via_ssh()
 
     if not web_containers:
         print("No web containers found.")
         return
 
     # Run Docker Bench security scan
-    run_docker_bench()
-    time.sleep(2)
+    #run_docker_bench()
+    #time.sleep(2)
     
     # Run OWASP Dependency-Check on ZERO-T
     #run_dependency_check()
@@ -160,8 +160,8 @@ def main():
         print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
-        run_trivy_scan(container['image'])
-        time.sleep(2)
+        #run_trivy_scan(container['image'])
+        #time.sleep(2)
         
         # Run OWASP ZAP scan if IP and port are available
         if container.get('host_port') != 'N/A':
