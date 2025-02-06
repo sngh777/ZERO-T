@@ -170,7 +170,7 @@ def main():
 
         # Run Nmap scan
         if container.get('host_port') != 'N/A':
-            run_nmap_scan_dockerized("localhost",container['host_port'])
+            run_nmap_scan_dockerized("34.207.159.185",container['host_port'])
         time.sleep(2)
      
 if __name__ == '__main__':
