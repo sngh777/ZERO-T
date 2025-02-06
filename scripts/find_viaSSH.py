@@ -3,7 +3,7 @@ import docker
 import json
 
 # Hardcoded remote EC2 IP address and SSH login details
-REMOTE_HOST = '34.207.71.152'  # Replace with your EC2 public IP
+REMOTE_HOST = '34.207.159.185'  # Replace with your EC2 public IP
 SSH_USER = 'ec2-user'  # Replace with your EC2 username (typically 'ec2-user' for Amazon Linux)
 SSH_KEY_PATH = '/home/user/Downloads/zta.pem'  # Path to your private SSH key
 
