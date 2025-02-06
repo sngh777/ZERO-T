@@ -2,7 +2,7 @@ import subprocess
 import sys
 import os
 
-def run_zap_scan(host_port):
+def run_zap_scan(host_ip,host_port):
     """Run ZAP scan with proper error handling and permissions"""
     print("Pulling the zaproxy/zap-stable image...")
     try:
@@ -18,12 +18,12 @@ def run_zap_scan(host_port):
         "--user", "root",
         "zaproxy/zap-stable",
         "zap-baseline.py",
-        "-t", f"http://localhost:{host_port}",
+        "-t", f"http://{host_ip}:{host_port}",
         "-r", "report.html"  # Explicit output file
     ]
 
     try:
-        print(f"Running ZAP scan on http://localhost:{host_port}...")
+        print(f"Running ZAP scan on http://{host_ip}:{host_port}...")
         result = subprocess.run(
             zap_command,
             capture_output=True,
