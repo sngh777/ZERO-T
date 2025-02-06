@@ -1,60 +1,60 @@
 import paramiko
-import docker
 import json
+import time
 
-# Hardcoded remote EC2 IP address and SSH login details
-REMOTE_HOST = '34.207.159.185'  # Replace with your EC2 public IP
-SSH_USER = 'ec2-user'  # Replace with your EC2 username (typically 'ec2-user' for Amazon Linux)
-SSH_KEY_PATH = '/home/user/Downloads/zta.pem'  # Path to your private SSH key
+# Hardcoded EC2 instance details
+REMOTE_HOST = '34.207.159.185'  
+SSH_USER = 'ec2-user'  
+SSH_KEY_PATH = '/home/user/Downloads/zta.pem' # Replace with your actual key path
+
 
 def find_web_containers_via_ssh():
-
-     # Initialize the list before exception handling
+    """Find and list web containers running on a remote Docker host via SSH."""
     web_containers = []
-    # Create an SSH client instance
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
-        # Connect to the EC2 instance via SSH using the private key
         ssh_client.connect(REMOTE_HOST, username=SSH_USER, key_filename=SSH_KEY_PATH)
+        command = "docker ps -a --format '{{json .}}'"
+        stdin, stdout, stderr = ssh_client.exec_command(command)
+        containers_data = stdout.read().decode().strip()
 
-        # Run the command to get the list of Docker containers (including stopped ones)
-        stdin, stdout, stderr = ssh_client.exec_command("docker ps -a --format '{{json .}}'")
+        if not containers_data:
+            print("No containers found.")
+            return []
 
-        containers_data = stdout.read().decode()
-        containers_list = containers_data.splitlines()
+        web_ports = {80, 443}
 
-        web_ports = {80, 443}  # Common web server ports
-        
+        for container_data in containers_data.split("\n"):
+            try:
+                container_info = json.loads(container_data)
+                ports = container_info.get('Ports', '')
+                container_name = container_info.get('Names')
+                image = container_info.get('Image')
 
-        # Process each container's data
-        for container_data in containers_list:
-            container_info = json.loads(container_data)
-            container_ports = container_info.get('Ports', '')
-            container_ip = container_info.get('NetworkSettings', {}).get('IPAddress', 'N/A')
+                for port_mapping in ports.split(','):
+                    if '->' in port_mapping:
+                        host_port = port_mapping.split(':')[1].split('->')[0]
+                        container_port = port_mapping.split('->')[1].split('/')[0]
+                        if int(container_port) in web_ports:
+                            container_details = {
+                                'name': container_name,
+                                'image': image,
+                                'host_port': host_port,
+                                'container_port': container_port,
+                                'ip': "localhost"
+                            }
+                            web_containers.append(container_details)
+                            print(f"Found web container: {container_details}")
+            except (ValueError, KeyError) as parse_err:
+                print(f"Error parsing container data: {parse_err}")
 
-            # Check if the container is exposing web server ports
-            for port_str in container_ports.split(','):
-                port = int(port_str.split('/')[0]) if '/' in port_str else None
-                if port in web_ports:
-                    host_port = port_str.split('->')[1].split('/')[0] if '->' in port_str else 'N/A'
-                    container_info = {
-                        'name': container_info['Names'],  # Container name
-                        'image': container_info['Image'],  # Image name or ID
-                        'ip': container_ip,
-                        'container_port': port,
-                        'host_port': host_port
-                    }
-                    web_containers.append(container_info)
-                    # Print the container details
-                    print(f"Found web container: {container_info}")
-
+    except paramiko.SSHException as ssh_err:
+        print(f"Error occurred while connecting via SSH: {ssh_err}")
     except Exception as e:
-        print(f"Error occurred while connecting via SSH: {e}")
-    
+        print(f"Unexpected error: {e}")
     finally:
-        # Close the SSH connection
         ssh_client.close()
 
     return web_containers
