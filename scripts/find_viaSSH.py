@@ -8,6 +8,9 @@ SSH_USER = 'ec2-user'  # Replace with your EC2 username (typically 'ec2-user' fo
 SSH_KEY_PATH = '/home/user/Downloads/zta.pem'  # Path to your private SSH key
 
 def find_web_containers_via_ssh():
+
+     # Initialize the list before exception handling
+    web_containers = []
     # Create an SSH client instance
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -23,7 +26,7 @@ def find_web_containers_via_ssh():
         containers_list = containers_data.splitlines()
 
         web_ports = {80, 443}  # Common web server ports
-        web_containers = []
+        
 
         # Process each container's data
         for container_data in containers_list:
