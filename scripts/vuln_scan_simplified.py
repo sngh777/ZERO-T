@@ -165,7 +165,7 @@ def main():
         
         # Run OWASP ZAP scan if IP and port are available
         if container.get('host_port') != 'N/A':
-            run_zap_scan(container['host_port'])
+            run_zap_scan("34.207.159.185",container['host_port'])
         time.sleep(2)
 
         # Run Nmap scan
