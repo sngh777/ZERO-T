@@ -41,41 +41,6 @@ def run_docker_bench():
         print(container.decode('utf-8'))  # Print container logs
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
-'''
-def run_zap_scan(host_port):
-    """
-    Run an OWASP ZAP scan on the specified target host and port using the newer zaproxy/zap-stable image.
-    
-    :param target_host: The host to scan (e.g., 'localhost').
-    :param target_port: The port to scan (e.g., 8080).
-    """
-   
-    try:
-        # Pull the newer OWASP ZAP image
-        print("Pulling OWASP ZAP image (ghcr.io/zaproxy/zaproxy:stable)...")
-        client.images.pull("ghcr.io/zaproxy/zaproxy:stable")
-
-        # Define the output directory for ZAP reports
-        output_dir = os.path.join(os.getcwd(), "zap_reports")
-        os.makedirs(output_dir, exist_ok=True)  # Create the directory if it doesn't exist
-
-        # Run OWASP ZAP scan
-        print("Starting OWASP ZAP scan...")
-        client.containers.run(
-            "ghcr.io/zaproxy/zaproxy:stable",  # Use the new image
-            f"zap-baseline.py -t http://localhost:{host_port}",  # ZAP scan command
-            network="host",  # Use host network mode
-            volumes={output_dir: {'bind': '/zap/wrk', 'mode': 'rw'}},  # Mount current directory
-            remove=True,  # Remove container after execution
-            stdout=True,  # Show stdout
-            stderr=True  # Show stderr
-        )
-        print("ZAP scan completed successfully.")
-        print(container.decode('utf-8'))  # Print ZAP scan logs
-        print(f"ZAP scan completed. Reports saved in '{output_dir}'.")
-    except Exception as e:
-        print(f"Error running OWASP ZAP: {e}")
-'''
 
 
 
