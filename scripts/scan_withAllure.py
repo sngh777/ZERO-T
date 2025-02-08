@@ -25,6 +25,8 @@ def run_docker_bench():
             pid_mode="host",
             userns_mode="host",
             cap_add=["audit_control"],
+            privileged=True,  # Required for Docker Bench Security
+            working_dir="/", 
             volumes={
                 "/etc": {"bind": "/etc", "mode": "ro"},
                 "/usr/bin/containerd": {"bind": "/usr/bin/containerd", "mode": "ro"},
