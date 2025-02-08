@@ -20,6 +20,7 @@ def run_docker_bench():
         client.images.pull("docker/docker-bench-security")
         container_logs = client.containers.run(
             image="docker/docker-bench-security",
+            command="./docker-bench-security.sh",  # Explicit script call
             remove=True,
             network_mode="host",
             pid_mode="host",
