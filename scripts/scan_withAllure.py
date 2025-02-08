@@ -2,6 +2,7 @@ import os
 import time
 import docker
 import json
+import subprocess
 from find_viaSSH import find_web_containers_via_ssh
 from zap_scan_almost import run_zap_scan
 
