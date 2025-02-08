@@ -11,6 +11,7 @@ client = docker.from_env()
 def save_to_allure_results(tool_name, report_content):
     os.makedirs("allure-results", exist_ok=True)
     output_path = f"allure-results/{tool_name}_report.json"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, 'w') as file:
         json.dump(report_content, file)
     print(f"{tool_name} report saved to: {output_path}")
