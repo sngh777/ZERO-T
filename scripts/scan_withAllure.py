@@ -13,7 +13,7 @@ def save_to_allure_results(tool_name, report_content):
     with open(output_path, 'w') as file:
         json.dump(report_content, file)
     print(f"{tool_name} report saved to: {output_path}")
-
+'''
 def run_docker_bench():
     print("Running Docker Bench Security scan...")
     try:
@@ -44,6 +44,48 @@ def run_docker_bench():
         save_to_allure_results("docker_bench_security", report_data)
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
+'''
+
+
+def run_docker_bench():
+    print("Running Docker Bench Security scan...")
+
+    cmd = [
+        "docker", "run", "--privileged", "--rm",
+        "-v", "/etc:/etc:ro",
+        "-v", "/var/run/docker.sock:/var/run/docker.sock:ro",
+        "-v", "/usr/bin/containerd:/usr/bin/containerd:ro",
+        "--network", "host",
+        "docker/docker-bench-security"
+    ]
+
+    try:
+        # Pull the image first
+        print("Pulling Docker Bench Security image...")
+        subprocess.run(["docker", "pull", "docker/docker-bench-security"], check=True)
+
+        # Execute the Docker container
+        print("Starting Docker Bench Security scan...")
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+        # Display and save logs
+        logs = result.stdout.strip()
+        if logs:
+            print(f"Scan Output:\n{logs}")
+            report_data = [{"result": line} for line in logs.split("\n")]
+            save_to_allure_results("docker_bench_security", report_data)
+
+        # Handle errors
+        if result.returncode != 0:
+            print(f"Non-zero exit code ({result.returncode}) returned.")
+            save_to_allure_results("docker_bench_security_error", {"error_logs": result.stderr})
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error running Docker Bench Security: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+
 
 def run_trivy_scan(image_name):
     if not image_name or image_name.lower() == "n/a":
