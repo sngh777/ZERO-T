@@ -25,13 +25,17 @@ def run_docker_bench():
             pid_mode="host",
             userns_mode="host",
             cap_add=["audit_control"],
-            privileged=True,  # Required for Docker Bench Security
-            working_dir="/", 
+            environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")}, 
             volumes={
                 "/etc": {"bind": "/etc", "mode": "ro"},
                 "/usr/bin/containerd": {"bind": "/usr/bin/containerd", "mode": "ro"},
-                "/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "ro"},
+                "/usr/bin/runc": {"bind": "/usr/bin/runc", "mode": "ro"},
+                "/usr/lib/systemd": {"bind": "/usr/lib/systemd", "mode": "ro"},
+                "/var/lib": {"bind": "/var/lib", "mode": "ro"},
+                "/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "ro"}
             },
+            labels={"docker_bench_security": ""},  # Add a label
+            detach=False  # Run in the foreground
         )
         report_data = [{"result": line.strip()} for line in container_logs.decode().split("\n") if line]
         save_to_allure_results("docker_bench_security", report_data)
