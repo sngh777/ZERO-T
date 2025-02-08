@@ -23,6 +23,7 @@ def run_docker_bench():
             remove=True,
             network_mode="host",
             pid_mode="host",
+            privileged=True,
             userns_mode="host",
             cap_add=["audit_control"],
             environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")}, 
