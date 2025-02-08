@@ -37,6 +37,7 @@ def run_docker_bench():
             labels={"docker_bench_security": ""},  # Add a label
             detach=False  # Run in the foreground
         )
+        print(container.decode('utf-8'))  # Print container logs
         report_data = [{"result": line.strip()} for line in container_logs.decode().split("\n") if line]
         save_to_allure_results("docker_bench_security", report_data)
     except docker.errors.APIError as e:
