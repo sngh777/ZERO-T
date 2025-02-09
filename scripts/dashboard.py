@@ -41,7 +41,7 @@ def run_docker_bench():
             pid_mode="host",  # Use host PID namespace
             userns_mode="host",  # Use host user namespace
             cap_add=["audit_control"],  # Add audit_control capability
-            environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},  # Pass environment variable
+            environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},
             volumes={
                 "/etc": {"bind": "/etc", "mode": "ro"},
                 "/usr/bin/containerd": {"bind": "/usr/bin/containerd", "mode": "ro"},
@@ -50,16 +50,27 @@ def run_docker_bench():
                 "/var/lib": {"bind": "/var/lib", "mode": "ro"},
                 "/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "ro"}
             },
-            labels={"docker_bench_security": ""},  # Add a label
+            labels={"docker_bench_security": ""},
             detach=False  # Run in the foreground
         )
         report_path = os.path.join(REPORT_DIR, "docker_bench_report.txt")
         with open(report_path, "w") as f:
             f.write(logs.decode("utf-8"))
         print(f"DockerBench report saved to {report_path}")
+    except docker.errors.ContainerError as e:
+        # Capture logs from the container error
+        logs = e.stdout or e.stderr
+        if logs:
+            logs = logs.decode('utf-8')
+        else:
+            logs = "No logs available from the Docker Bench Security scan."
+        report_path = os.path.join(REPORT_DIR, "docker_bench_report.txt")
+        with open(report_path, "w") as f:
+            f.write(logs)
+        print(f"Docker Bench Security scan completed with exit code {e.exit_status}. Report saved.")
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
-
+        
 # Other scanning functions remain unchanged
 def sanitize_filename(name):
     # Remove special characters and replace spaces with underscores
