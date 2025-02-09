@@ -40,8 +40,7 @@ def run_docker_bench():
             network_mode="host",  # Use host network
             pid_mode="host",  # Use host PID namespace
             userns_mode="host", # Use host user namespace
-            privileged=True, 
-            command="./docker-bench-security.sh",# Run with privileged mode
+            privileged=True,# Run with privileged mode
             cap_add=["audit_control"],  # Add audit_control capability
             environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},  # Pass environment variable
             volumes={
