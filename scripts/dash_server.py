@@ -6,11 +6,13 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 
+# Directory to store scan reports
 REPORT_DIR = "scan_reports"
 
+# Plotly Dash app setup
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-
+# Helper functions
 def load_reports():
     report_files = [f for f in os.listdir(REPORT_DIR) if f.endswith(".json")]
     reports = {}
@@ -36,15 +38,6 @@ def generate_graphs():
     return html.Div("No graph data available.")
 
 
-def find_available_port(start_port=8080):
-    port = start_port
-    while True:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            if sock.connect_ex(("localhost", port)) != 0:
-                return port
-            port += 1
-
-
 app.layout = dbc.Container([
     dbc.Row(dbc.Col(html.H1("Security Scan Dashboard", className="text-center text-primary my-4"))),
     dcc.Tabs(id="report-tabs", value='docker_bench_report', children=[
@@ -66,7 +59,20 @@ def display_report_content(selected_report):
     return json.dumps(report_content, indent=4) if report_content else "No report content available."
 
 
-if __name__ == "__main__":
-    port = find_available_port(8080)
-    print(f"Launching Dash app on port {port}")
-    app.run_server(host="localhost", port=port, debug=False)
+def find_available_port(start_port=8080):
+    port = start_port
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            if sock.connect_ex(("localhost", port)) != 0:
+                return port
+            port += 1
+
+
+def main():
+    available_port = find_available_port(8080)
+    print(f"Launching Dash app on port {available_port}")
+    app.run_server(host="localhost", port=available_port, debug=False)
+
+
+if __name__ == '__main__':
+    main()
