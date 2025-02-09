@@ -3,7 +3,7 @@ import time
 import json
 import docker
 import socket
-from dash import Dash, dcc, html
+from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 from find_viaSSH import find_web_containers_via_ssh
 import re
@@ -114,8 +114,8 @@ app.layout = dbc.Container([
 
 # Callback to update report content
 @app.callback(
-    dcc.Output('report-content', 'children'),
-    [dcc.Input('report-tabs', 'value')]
+    Output('report-content', 'children'),
+    Input('report-tabs', 'value')
 )
 def display_report_content(selected_report):
     reports = load_reports()
