@@ -148,7 +148,8 @@ def main():
         print(f"Scanning container: {container['name']} at 34.207.159.185:{container['host_port']}")
 
         # Run Trivy scan
-        run_trivy_scan(container['image'])
+        if container.get('host_port'):
+            run_trivy_scan(container['image'])
         time.sleep(2)
 
         # Run Nmap scan
