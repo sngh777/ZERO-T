@@ -1,5 +1,5 @@
-import json
 import os
+import json
 import socket
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
@@ -8,7 +8,6 @@ import pandas as pd
 
 REPORT_DIR = "scan_reports"
 
-# Plotly Dash app setup
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
@@ -23,42 +22,18 @@ def load_reports():
 
 def generate_graphs():
     reports = load_reports()
-    graph_components = []
+    graph_data = []
 
-    # DockerBench Graph
-    docker_bench_data = [
-        {"Report": name, "Issues": len(content)}
-        for name, content in reports.items() if "docker_bench" in name
-    ]
-    if docker_bench_data:
-        df_docker = pd.DataFrame(docker_bench_data)
-        graph_components.append(dcc.Graph(
-            figure=px.bar(df_docker, x="Report", y="Issues", title="DockerBench Issues Report")
-        ))
+    for name, report_content in reports.items():
+        if isinstance(report_content, list):
+            issue_count = len(report_content)
+            tool = "DockerBench" if "docker_bench" in name else ("Trivy" if "trivy" in name else "Nmap")
+            graph_data.append({"Tool": tool, "Report": name, "Issues": issue_count})
 
-    # Trivy Graph
-    trivy_data = [
-        {"Report": name, "Issues": len(content)}
-        for name, content in reports.items() if "trivy" in name
-    ]
-    if trivy_data:
-        df_trivy = pd.DataFrame(trivy_data)
-        graph_components.append(dcc.Graph(
-            figure=px.bar(df_trivy, x="Report", y="Issues", title="Trivy Issues Report")
-        ))
-
-    # Nmap Graph
-    nmap_data = [
-        {"Report": name, "Issues": len(content)}
-        for name, content in reports.items() if "nmap" in name
-    ]
-    if nmap_data:
-        df_nmap = pd.DataFrame(nmap_data)
-        graph_components.append(dcc.Graph(
-            figure=px.bar(df_nmap, x="Report", y="Issues", title="Nmap Issues Report")
-        ))
-
-    return graph_components if graph_components else [html.Div("No graph data available.")]
+    if graph_data:
+        df = pd.DataFrame(graph_data)
+        return dcc.Graph(figure=px.bar(df, x="Report", y="Issues", color="Tool", title="Security Scan Issues"))
+    return html.Div("No graph data available.")
 
 
 def find_available_port(start_port=8080):
@@ -77,7 +52,7 @@ app.layout = dbc.Container([
     ]),
     html.Div(id='report-content', style={"whiteSpace": "pre-wrap", "backgroundColor": "#f8f9fa", "padding": "15px", "borderRadius": "5px"}),
     html.Br(),
-    *generate_graphs()
+    html.Div(generate_graphs())
 ])
 
 
@@ -91,7 +66,7 @@ def display_report_content(selected_report):
     return json.dumps(report_content, indent=4) if report_content else "No report content available."
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = find_available_port(8080)
     print(f"Launching Dash app on port {port}")
     app.run_server(host="localhost", port=port, debug=False)
