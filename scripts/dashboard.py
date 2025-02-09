@@ -157,7 +157,7 @@ def main():
 
     # Iterate over each web container and run scans
     for container in web_containers:
-        print(f"Scanning container: {container['name']} at {"34.207.159.185"}:{container['host_port']}")
+        print(f"Scanning container: {container['name']} at {34.207.159.185}:{container['host_port']}")
 
         # Run Trivy scan
         run_trivy_scan(container['image'])
