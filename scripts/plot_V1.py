@@ -68,7 +68,8 @@ def run_trivy_scan(image_name):
             command=f"image --compliance docker-cis-1.6.0 {image_name}",
             remove=True,
             volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},
-            detach=False
+            detach=False,
+            timeout=300  # Extend timeout here as well
         )
         compliance_report_path = os.path.join(REPORT_DIR, f"trivy_compliance_report_{sanitize_filename(image_name)}.txt")
         with open(compliance_report_path, "w") as f:
@@ -81,7 +82,8 @@ def run_trivy_scan(image_name):
             command=f"image {image_name}",
             remove=True,
             volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},
-            detach=False
+            detach=False,
+            timeout=300  # Extend timeout here as well
         )
         vuln_report_path = os.path.join(REPORT_DIR, f"trivy_vuln_report_{sanitize_filename(image_name)}.txt")
         with open(vuln_report_path, "w") as f:
