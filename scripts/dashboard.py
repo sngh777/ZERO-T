@@ -145,7 +145,7 @@ def main():
 
     # Iterate over each web container and run scans
     for container in web_containers:
-        print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
+        print(f"Scanning container: {container['name']} at 34.207.159.185:{container['host_port']}")
 
         # Run Trivy scan
         run_trivy_scan(container['image'])
@@ -153,7 +153,7 @@ def main():
 
         # Run Nmap scan
         if container.get('host_port'):
-            run_nmap_scan_dockerized(container['ip'], container['host_port'])
+            run_nmap_scan_dockerized("34.207.159.185", container['host_port'])
         time.sleep(2)
 
     # Launch the dashboard
