@@ -25,6 +25,7 @@ def run_docker_bench():
             remove=True,
             network_mode="host",
             pid_mode="host",
+            privileged=True,
             userns_mode="host",
             cap_add=["audit_control"],
             volumes={
