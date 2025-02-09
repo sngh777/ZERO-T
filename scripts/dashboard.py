@@ -39,7 +39,9 @@ def run_docker_bench():
             remove=True,  # Remove the container after execution
             network_mode="host",  # Use host network
             pid_mode="host",  # Use host PID namespace
-            userns_mode="host",  # Use host user namespace
+            userns_mode="host", # Use host user namespace
+            privileged=True,  # Run with privileged mode
+            working_dir="/",
             cap_add=["audit_control"],  # Add audit_control capability
             environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},  # Pass environment variable
             volumes={
