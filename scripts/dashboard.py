@@ -41,7 +41,7 @@ def run_docker_bench():
             pid_mode="host",  # Use host PID namespace
             userns_mode="host", # Use host user namespace
             privileged=True,  # Run with privileged mode
-            working_dir="/",
+            working_dir="/usr/local/bin",
             cap_add=["audit_control"],  # Add audit_control capability
             environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},  # Pass environment variable
             volumes={
