@@ -69,13 +69,16 @@ def run_trivy_scan(image_name):
             remove=True,
             volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},
             detach=False,
-            timeout=300  # Extend timeout here as well
+         
         )
+
+        compliance_logs.wait()  # Wait for container to finish
+    
         compliance_report_path = os.path.join(REPORT_DIR, f"trivy_compliance_report_{sanitize_filename(image_name)}.txt")
         with open(compliance_report_path, "w") as f:
             f.write(compliance_logs.decode('utf-8'))
         print(f"Trivy compliance report for {image_name} saved to {compliance_report_path}")
-
+        compliance_logs.remove()
         print("Running Trivy vulnerability scan...")
         vuln_logs = client.containers.run(
             image="aquasec/trivy",
@@ -83,13 +86,15 @@ def run_trivy_scan(image_name):
             remove=True,
             volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},
             detach=False,
-            timeout=300  # Extend timeout here as well
+           
         )
+
+        vuln_logs.wait()
         vuln_report_path = os.path.join(REPORT_DIR, f"trivy_vuln_report_{sanitize_filename(image_name)}.txt")
         with open(vuln_report_path, "w") as f:
             f.write(vuln_logs.decode('utf-8'))
         print(f"Trivy vulnerability report for {image_name} saved to {vuln_report_path}")
-
+        vuln_logs.remove()
     except docker.errors.APIError as e:
         print(f"Error running Trivy: {e}")
 
