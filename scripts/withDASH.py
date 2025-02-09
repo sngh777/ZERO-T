@@ -110,6 +110,16 @@ def dashboard():
     return render_template_string(html_template, reports=reports)
 
 
+def find_available_port(start_port=8080):
+    """ Find an available port starting from the specified port."""
+    port = start_port
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            if sock.connect_ex(("0.0.0.0", port)) != 0:
+                return port
+            port += 1
+
+
 def main():
     # Find all web containers
     web_containers = find_web_containers_via_ssh()
@@ -136,7 +146,9 @@ def main():
         time.sleep(2)
 
     # Launch the dashboard
-    app.run(host="0.0.0.0", port=8080)
+    available_port = find_available_port(8080)
+    print(f"Launching Flask app on port {available_port}")
+    app.run(host="0.0.0.0", port=available_port)
 
 
 if __name__ == '__main__':
