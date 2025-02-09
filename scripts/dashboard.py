@@ -4,7 +4,6 @@ import json
 import docker
 import socket
 from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from find_viaSSH import find_web_containers_via_ssh
 import re
@@ -37,40 +36,17 @@ def run_docker_bench():
         logs = client.containers.run(
             image="docker/docker-bench-security",
             remove=True,  # Remove the container after execution
-            network_mode="host",  # Use host network
-            pid_mode="host",  # Use host PID namespace
-            userns_mode="host",  # Use host user namespace
-            cap_add=["audit_control"],  # Add audit_control capability
-            environment={"DOCKER_CONTENT_TRUST": os.getenv("DOCKER_CONTENT_TRUST", "")},
-            volumes={
-                "/etc": {"bind": "/etc", "mode": "ro"},
-                "/usr/bin/containerd": {"bind": "/usr/bin/containerd", "mode": "ro"},
-                "/usr/bin/runc": {"bind": "/usr/bin/runc", "mode": "ro"},
-                "/usr/lib/systemd": {"bind": "/usr/lib/systemd", "mode": "ro"},
-                "/var/lib": {"bind": "/var/lib", "mode": "ro"},
-                "/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "ro"}
-            },
-            labels={"docker_bench_security": ""},
-            detach=False  # Run in the foreground
+            volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "rw"}},
+            tty=True,  # Allocate a pseudo-TTY
+            privileged=True  # Run with privileged mode
         )
         report_path = os.path.join(REPORT_DIR, "docker_bench_report.txt")
         with open(report_path, "w") as f:
             f.write(logs.decode("utf-8"))
         print(f"DockerBench report saved to {report_path}")
-    except docker.errors.ContainerError as e:
-        # Capture logs from the container error
-        logs = e.stdout or e.stderr
-        if logs:
-            logs = logs.decode('utf-8')
-        else:
-            logs = "No logs available from the Docker Bench Security scan."
-        report_path = os.path.join(REPORT_DIR, "docker_bench_report.txt")
-        with open(report_path, "w") as f:
-            f.write(logs)
-        print(f"Docker Bench Security scan completed with exit code {e.exit_status}. Report saved.")
     except docker.errors.APIError as e:
         print(f"Error running Docker Bench Security: {e}")
-        
+
 # Other scanning functions remain unchanged
 def sanitize_filename(name):
     # Remove special characters and replace spaces with underscores
@@ -138,8 +114,8 @@ app.layout = dbc.Container([
 
 # Callback to update report content
 @app.callback(
-    Output('report-content', 'children'),
-    [Input('report-tabs', 'value')]
+    dcc.Output('report-content', 'children'),
+    [dcc.Input('report-tabs', 'value')]
 )
 def display_report_content(selected_report):
     reports = load_reports()
@@ -169,7 +145,7 @@ def main():
 
     # Iterate over each web container and run scans
     for container in web_containers:
-        print(f"Scanning container: {container['name']} at 34.207.159.185:{container['host_port']}")
+        print(f"Scanning container: {container['name']} at {container['ip']}:{container['host_port']}")
 
         # Run Trivy scan
         run_trivy_scan(container['image'])
@@ -177,7 +153,7 @@ def main():
 
         # Run Nmap scan
         if container.get('host_port'):
-            run_nmap_scan_dockerized("34.207.159.185", container['host_port'])
+            run_nmap_scan_dockerized(container['ip'], container['host_port'])
         time.sleep(2)
 
     # Launch the dashboard
