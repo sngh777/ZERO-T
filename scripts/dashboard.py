@@ -160,7 +160,8 @@ def main():
     # Launch the dashboard
     available_port = find_available_port(8080)
     print(f"Launching Dash app on port {available_port}")
-    app.run_server(host="0.0.0.0", port=available_port, debug=True)
+    app.run_server(host="0.0.0.0", port=available_port, debug=False)
+
 
 if __name__ == '__main__':
     main()
