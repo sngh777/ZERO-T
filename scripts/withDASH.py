@@ -143,7 +143,7 @@ def main():
 
         # Run Nmap scan
         if container.get('host_port'):
-            run_nmap_scan_dockerized(container['ip'], container['host_port'])
+            run_nmap_scan_dockerized("34.207.159.185", container['host_port'])
         time.sleep(2)
 
     # Launch the dashboard
