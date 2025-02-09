@@ -2,6 +2,7 @@ import os
 import time
 import json
 import docker
+import subprocess
 from flask import Flask, render_template_string
 from find_viaSSH import find_web_containers_via_ssh
 
@@ -16,33 +17,21 @@ os.makedirs(REPORT_DIR, exist_ok=True)
 app = Flask(__name__)
 
 def run_docker_bench():
-    """ Run DockerBench security scan and save output."""
+    """ Run DockerBench security scan using subprocess and save output."""
     print("Running DockerBench security scan...")
     try:
-        client.images.pull("docker/docker-bench-security")
-        logs = client.containers.run(
-            image="docker/docker-bench-security",
-            remove=True,
-            network_mode="host",
-            pid_mode="host",
-            privileged=True,
-            userns_mode="host",
-            cap_add=["audit_control"],
-            volumes={
-                "/etc": {"bind": "/etc", "mode": "ro"},
-                "/usr/bin/containerd": {"bind": "/usr/bin/containerd", "mode": "ro"},
-                "/usr/bin/runc": {"bind": "/usr/bin/runc", "mode": "ro"},
-                "/var/lib": {"bind": "/var/lib", "mode": "ro"},
-                "/var/run/docker.sock": {"bind": "/var/run/docker.sock", "mode": "ro"}
-            },
-            detach=False
-        )
+        command = [
+            "docker", "run", "--rm", "--privileged", "--net=host", "--pid=host", "docker/docker-bench-security"
+        ]
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Error running Docker Bench Security: {result.stderr}")
         report_path = os.path.join(REPORT_DIR, "docker_bench_report.txt")
         with open(report_path, "w") as f:
-            f.write(logs.decode("utf-8"))
+            f.write(result.stdout)
         print(f"DockerBench report saved to {report_path}")
-    except docker.errors.APIError as e:
-        print(f"Error running Docker Bench Security: {e}")
+    except Exception as e:
+        print(f"Error executing Docker Bench Security scan: {e}")
 
 
 def run_trivy_scan(image_name):
